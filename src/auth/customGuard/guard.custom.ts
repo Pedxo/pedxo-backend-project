@@ -10,8 +10,6 @@ export class AuthGuard implements CanActivate{
         private config: ConfigService
         ){}
 
-     
-
    async canActivate(context: ExecutionContext): Promise<boolean> {
    try {
     const request = context.switchToHttp().getRequest();

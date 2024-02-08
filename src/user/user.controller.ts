@@ -8,10 +8,14 @@ import { AuthGuard } from 'src/auth/customGuard/guard.custom';
 export class UserController {
     constructor(private userService: UserService){}
 
-    @UseGuards(AuthGuard)
     @Get('findall')
     async findallUser(): Promise<User[]>{
         return await this.userService.findall()
+    }
+
+    @Get('/')
+    async homepage(){
+        return 'this is home page...'
     }
 
 }

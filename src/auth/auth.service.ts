@@ -17,13 +17,17 @@ export class AuthService {
 
     async create(body: CreateUserDTO){
         
-        const {email, firstName, lastName, userName, password } = body;
+        const {email, firstName, lastName, userName, password, confiremedPassword } = body;
 
         const user = await this.userModel.findOne({
             $or: [
                 {email: email}, {userName: userName}
             ]
         });
+
+        if (password !== confiremedPassword) {
+            throw new HttpException('password and confirmed password must matched', HttpStatus.UNPROCESSABLE_ENTITY)
+        }
 
         if (user) {
 
