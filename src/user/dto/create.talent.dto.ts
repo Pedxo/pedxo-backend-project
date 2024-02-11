@@ -1,6 +1,6 @@
 import { Skilled } from "../enum/talent.enum";
 
-export class CreateTalentDTO{
+export class BecomeTalentDTO{
    
     firstName: string;
 

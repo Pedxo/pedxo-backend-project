@@ -1,10 +1,10 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { User } from "./user.schema";
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { Skilled } from "../enum/talent.enum";
 
 @Schema({timestamps: true})
-export class Talent{
+export class Talent extends Document{
     @Prop({type: String})
     firstName: string;
 
@@ -36,8 +36,8 @@ export class Talent{
     workPattern:string;
 
 
-    @Prop({type: mongoose.Schema.Types.ObjectId, ref: User})
-    userId: User
+    @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User'})
+    userId: string;
 
     @Prop({type: Object})
     image:object;
@@ -46,3 +46,5 @@ export class Talent{
     approved:boolean;
 
 }
+
+export const TalentSchema = SchemaFactory.createForClass(Talent)

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -7,7 +7,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './customGuard/guard.custom';
 
-@Module({
+//module decorator
+@Module(
+  {
  imports: [
   
   JwtModule.registerAsync({
@@ -23,5 +25,8 @@ import { AuthGuard } from './customGuard/guard.custom';
  ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard]
-})
+}
+)
+
+
 export class AuthModule {}

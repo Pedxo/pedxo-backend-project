@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
 @Schema({timestamps: true})
-export class User {
+export class User extends Document{
     @Prop({required: true})
     firstName: string;
 
@@ -19,7 +20,11 @@ export class User {
     password: string;
 
     @Prop({type: Boolean, default: false})
-    isSuspended: boolean
+    isSuspended: boolean;
+
+    @Prop({type: Boolean, default: false})
+    isTalent: boolean
+
 
 }
 

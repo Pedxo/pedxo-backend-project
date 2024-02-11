@@ -1,18 +1,116 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
+import { Talent } from './schema/talent.schema';
+import { BecomeTalentDTO } from './dto/create.talent.dto';
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel(User.name)
-    private userModel: Model<User>
+    private userModel: Model<User>,
+
+    @InjectModel(Talent.name)
+    private talentModel: Model<Talent>
     ){}
 
     async findall(): Promise<User[]>{
-        const user = await this.userModel.find().lean().exec()
+        const user = await this.userModel.find().lean()
 
         return user
         
+    }
+
+    async becomeTalent(body: BecomeTalentDTO, user: User): Promise<any>{
+        const {firstName, lastName, workEmail, workPhone, twitterLink, city, zipCode, skills, experienedLevel, image, workPattern} = body;
+        const talent = await this.talentModel.findOne({$or: [{workEmail: workEmail}, {workPhone: workPhone}]}).lean();
+
+        if (talent) {
+            if (talent.workEmail === workEmail && talent.workPhone === workPhone) {
+                throw new HttpException('work email and phone has already being used by another talent', HttpStatus.UNPROCESSABLE_ENTITY)
+            }
+            if (talent.workEmail === workEmail) {
+                throw new HttpException('work email has already be used by another talent', HttpStatus.UNPROCESSABLE_ENTITY)
+            }
+            if (talent.workPhone === workPhone) {
+                throw new HttpException('can not use the phone number twice', HttpStatus.UNPROCESSABLE_ENTITY)
+            }
+        }
+
+        const createTalent = await this.talentModel.create({
+            firstName,
+            lastName,
+            workEmail,
+            workPattern,
+            workPhone,
+            twitterLink,
+            city,
+            zipCode,
+            skills,
+            experienedLevel,
+            image,
+            userId: user._id
+        });
+
+
+
+        return {
+            Response: `your application have received; kindly wait for approval`
+        }
+
+    //    const checkUser = await this.userModel.findById(user._id).lean();
+    //    if (checkUser.isTalent === true) {
+    //     return {
+    //         Response: `your application is being approved; congratulations!`
+    //     }
+    //    }else{
+    //     return {
+    //         Response: `Your application is received; kindly wait for approval`
+    //     }
+    //    }
+        
+    }
+
+    async approvedTalent(id: string): Promise<any>{
+        const talent = await this.talentModel.findById(id).lean();
+
+        if (!talent) {
+            throw new HttpException(`talent with id ${id} doesn't exist`, HttpStatus.NOT_FOUND)
+        }
+
+        if (talent.approved === true) {
+            throw new HttpException('user application is already approved', HttpStatus.UNPROCESSABLE_ENTITY)
+        }
+
+       // const approved = talent.approved = true;
+
+       const talentupdated = await this.talentModel.findByIdAndUpdate(id, {approved: true}, 
+            {
+            new: true,
+            runValidators: true
+            });
+
+        console.log(talent.userId);
+
+        const userid = talent.userId;
+
+        if (talentupdated.approved = true) {
+         await this.userModel.findByIdAndUpdate(
+                userid, 
+                {isTalent: true},
+
+                {
+                    new: true,
+                    runValidators: true
+                }
+              
+                )
+
+        }
+        
+        return {
+            Response: `talent ${talentupdated.firstName, talentupdated.lastName} application approved successfully`
+        }
+
     }
 }

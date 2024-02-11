@@ -15,6 +15,7 @@ export class AuthService {
     private jwtService: JwtService
     ){}
 
+    //sign up account endpoint
     async create(body: CreateUserDTO){
         
         const {email, firstName, lastName, userName, password, confiremedPassword } = body;
@@ -62,6 +63,7 @@ export class AuthService {
        return token
     }
 
+    //Log in endpoint
     async loginUser(body: LoginUserDTO){
         const {email, password} = body
        try {

@@ -8,15 +8,19 @@ export class AuthController {
 
     constructor(private authService: AuthService){}
 
+    //middleware?
     @Post('/user/create')
     async createuser(@Body() body: CreateUserDTO){
         return await this.authService.create(body)
     }
 
+    //middleware?
     @Post('/user/login')
     async loginUser(@Body() body: LoginUserDTO){
-        console.log(body)
         return await this.authService.loginUser(body)
     }
 
 }
+
+
+
