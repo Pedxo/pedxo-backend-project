@@ -13,11 +13,13 @@ export class AuthGuard implements CanActivate{
    async canActivate(context: ExecutionContext): Promise<boolean> {
    try {
     const request = context.switchToHttp().getRequest();
+    
     const token = this.extractTokenFromHeader(request);
 
    if (!token) {
     throw new HttpException('not unauthorized', HttpStatus.UNAUTHORIZED)
    }
+ 
 
    const payload = await this.jwtService.verifyAsync(token, {
     secret: this.config.get<string>('JWT_SECRET')
@@ -39,6 +41,7 @@ export class AuthGuard implements CanActivate{
     //please note the space in between the splite is very import.. without the space code won't work
     private extractTokenFromHeader(req: Request): string | undefined {
         const [type, token] = req.headers.authorization?.split(' ') ?? [];
+     
         return type === "Bearer"? token: undefined
        }
 }

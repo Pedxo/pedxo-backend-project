@@ -6,13 +6,15 @@ import { CreateUserDTO } from './dto/create.user.dto';
 import { HashData, comparedHashed } from 'src/common/hashed/hashed.data';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDTO } from './dto/login.user.dto';
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
 export class AuthService {
     constructor(@InjectModel(User.name)
     private userModel: Model<User>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private configService: ConfigService
     ){}
 
     //sign up account endpoint
@@ -57,9 +59,11 @@ export class AuthService {
         })
 
         const payload = {
-            user: newuser._id
+           newuser
         }
-        const token = await this.jwtService.signAsync( payload )
+        const token = await this.jwtService.signAsync( payload, {
+            secret: this.configService.get<string>('JWT_SECRET')
+        } )
        return token
     }
 

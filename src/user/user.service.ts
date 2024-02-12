@@ -7,7 +7,8 @@ import { BecomeTalentDTO } from './dto/create.talent.dto';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(User.name)
+    constructor(
+    @InjectModel(User.name)
     private userModel: Model<User>,
 
     @InjectModel(Talent.name)
@@ -21,7 +22,8 @@ export class UserService {
         
     }
 
-    async becomeTalent(body: BecomeTalentDTO, user: User): Promise<any>{
+    async becomeTalent( user: User, body: BecomeTalentDTO): Promise<any>{
+
         const {firstName, lastName, workEmail, workPhone, twitterLink, city, zipCode, skills, experienedLevel, image, workPattern} = body;
         const talent = await this.talentModel.findOne({$or: [{workEmail: workEmail}, {workPhone: workPhone}]}).lean();
 
@@ -37,7 +39,7 @@ export class UserService {
             }
         }
 
-        const createTalent = await this.talentModel.create({
+        await this.talentModel.create({
             firstName,
             lastName,
             workEmail,
@@ -49,25 +51,24 @@ export class UserService {
             skills,
             experienedLevel,
             image,
-            userId: user._id
+            userId: user.user
         });
 
 
 
         return {
-            Response: `your application have received; kindly wait for approval`
+            Response: `your application have been received; kindly wait for approval`
         }
 
-    //    const checkUser = await this.userModel.findById(user._id).lean();
-    //    if (checkUser.isTalent === true) {
-    //     return {
-    //         Response: `your application is being approved; congratulations!`
-    //     }
-    //    }else{
-    //     return {
-    //         Response: `Your application is received; kindly wait for approval`
-    //     }
-    //    }
+    }
+
+
+    //the sort will be changed to most rated talent;
+    //another one is to look at the ui and remove the name and email inputs on the talent form because it is not necessary
+    async findAllTalent():Promise<Talent[]>{
+        const talent = await this.talentModel.find({approved: true}).sort({createdAt: 'desc'}).populate('userId').lean();
+
+            return talent
         
     }
 
@@ -82,15 +83,12 @@ export class UserService {
             throw new HttpException('user application is already approved', HttpStatus.UNPROCESSABLE_ENTITY)
         }
 
-       // const approved = talent.approved = true;
-
        const talentupdated = await this.talentModel.findByIdAndUpdate(id, {approved: true}, 
             {
             new: true,
             runValidators: true
             });
 
-        console.log(talent.userId);
 
         const userid = talent.userId;
 

@@ -2,19 +2,26 @@ import { Body, Controller, Get, Param, Post, UseGuards, UseInterceptors } from '
 import { UserService } from './user.service';
 import { User } from './schema/user.schema';
 import { AuthGuard } from 'src/auth/customGuard/guard.custom';
-import { Talent } from './schema/talent.schema';
 import { CurrentUser } from 'src/common/decorator/current.logged.user';
 import { BecomeTalentDTO } from './dto/create.talent.dto';
+import { Talent } from './schema/talent.schema';
 
 @Controller('user')
 
 export class UserController {
-    constructor(private userService: UserService){}
+    constructor(
+        private userService: UserService,
+        ){}
 
    // @UseGuards(AuthGuard)
     @Get('findall')
     async findallUser(): Promise<User[]>{
         return await this.userService.findall()
+    }
+
+    @Get('/findAllTalent')
+    async findAllTalent(): Promise<Talent[]>{
+        return await this.userService.findAllTalent()
     }
 
     @Get('/')
@@ -23,9 +30,10 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard)
-    @Post('/talenet')
-    async becomeATalent(@Body() body: BecomeTalentDTO, @CurrentUser() user: User,):Promise<any>{
-        return await this.userService.becomeTalent(body, user)
+    @Post('/become/talent')
+    async becomeATalent(@CurrentUser() user: User, @Body() body: BecomeTalentDTO):Promise<any>{
+    
+        return await this.userService.becomeTalent(user, body)
 
     }
 
@@ -34,5 +42,7 @@ export class UserController {
     async ApprovedTalent(@Param('id') id: string){
         return await this.userService.approvedTalent(id)
     }
+
+
 
 }

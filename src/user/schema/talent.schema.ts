@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { User } from "./user.schema";
 import mongoose, { Document } from "mongoose";
 import { Skilled } from "../enum/talent.enum";
 
@@ -23,7 +22,7 @@ export class Talent extends Document{
     @Prop({type: String})
     city?:string;
 
-    @Prop({type: String})
+    @Prop({type: Number})
     zipCode:number;
 
     @Prop({type: [String], required: true})
@@ -32,6 +31,7 @@ export class Talent extends Document{
     @Prop({type: String, enum: Skilled,  required: true})
     experienedLevel: Skilled 
 
+
     @Prop({type: String})
     workPattern:string;
 
@@ -39,8 +39,8 @@ export class Talent extends Document{
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User'})
     userId: string;
 
-    @Prop({type: Object})
-    image:object;
+    @Prop({type: Object, default: ''})
+    image?:object;
 
     @Prop({type: Boolean, default: false})
     approved:boolean;
