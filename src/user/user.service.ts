@@ -23,15 +23,16 @@ export class UserService {
     }
 
     async becomeTalent( user: User, body: BecomeTalentDTO): Promise<any>{
+        const {email, firstName, lastName, _id} = user
 
-        const {firstName, lastName, workEmail, workPhone, twitterLink, city, zipCode, skills, experienedLevel, image, workPattern} = body;
-        const talent = await this.talentModel.findOne({$or: [{workEmail: workEmail}, {workPhone: workPhone}]}).lean();
+        const {workPhone, twitterLink, city, zipCode, skills, experienedLevel, image, workPattern} = body;
+        const talent = await this.talentModel.findOne({$or: [{workEmail: email}, {workPhone: workPhone}]}).lean();
 
         if (talent) {
-            if (talent.workEmail === workEmail && talent.workPhone === workPhone) {
+            if (talent.workEmail === email && talent.workPhone === workPhone) {
                 throw new HttpException('work email and phone has already being used by another talent', HttpStatus.UNPROCESSABLE_ENTITY)
             }
-            if (talent.workEmail === workEmail) {
+            if (talent.workEmail === email) {
                 throw new HttpException('work email has already be used by another talent', HttpStatus.UNPROCESSABLE_ENTITY)
             }
             if (talent.workPhone === workPhone) {
@@ -42,7 +43,7 @@ export class UserService {
         await this.talentModel.create({
             firstName,
             lastName,
-            workEmail,
+            workEmail: email,
             workPattern,
             workPhone,
             twitterLink,
@@ -51,7 +52,7 @@ export class UserService {
             skills,
             experienedLevel,
             image,
-            userId: user.user
+            userId: _id
         });
 
 
@@ -66,7 +67,7 @@ export class UserService {
     //the sort will be changed to most rated talent;
     //another one is to look at the ui and remove the name and email inputs on the talent form because it is not necessary
     async findAllTalent():Promise<Talent[]>{
-        const talent = await this.talentModel.find({approved: true}).sort({createdAt: 'desc'}).populate('userId').lean();
+        const talent = await this.talentModel.find({approved: true}).sort({createdAt: 'desc'}).lean();
 
             return talent
         

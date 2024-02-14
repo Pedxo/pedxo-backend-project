@@ -5,13 +5,13 @@ import { Skilled } from "../enum/talent.enum";
 @Schema({timestamps: true})
 export class Talent extends Document{
     @Prop({type: String})
-    firstName: string;
+    firstName?: string;
 
     @Prop({type: String})
-    lastName: string;
+    lastName?: string;
     
     @Prop({type: String})
-    workEmail: string;
+    workEmail?: string;
 
     @Prop({type: String})
     workPhone:string;
@@ -39,7 +39,7 @@ export class Talent extends Document{
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User'})
     userId: string;
 
-    @Prop({type: Object, default: ''})
+    @Prop({type: Object, default: null})
     image?:object;
 
     @Prop({type: Boolean, default: false})

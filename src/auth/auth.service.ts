@@ -59,7 +59,7 @@ export class AuthService {
         })
 
         const payload = {
-           newuser
+          user: newuser._id
         }
         const token = await this.jwtService.signAsync( payload, {
             secret: this.configService.get<string>('JWT_SECRET')
@@ -81,7 +81,10 @@ export class AuthService {
         }
 
         const payload= {
-            user: user._id
+           _id: user._id,
+           firstName: user.firstName,
+           lastName: user.lastName,
+           email: user.email
         }
         const token = await this.jwtService.signAsync(payload);
         return token

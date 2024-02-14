@@ -3,19 +3,6 @@ import { Skilled } from "../enum/talent.enum";
 
 
 export class BecomeTalentDTO{
-    @IsNotEmpty()
-    @IsString()
-    firstName: string;
-
-    @IsNotEmpty()
-    @IsString()
-    lastName: string;
-    
-    @IsNotEmpty()
-    @IsEmail()
-    workEmail: string;
-
- 
     @IsPhoneNumber()
     @IsNotEmpty()
     workPhone:string;

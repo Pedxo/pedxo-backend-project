@@ -37,11 +37,14 @@ export class UserController {
 
     }
 
+
     //@UseGuards(AuthGuard)//i will use this to make only admin to only approve talent
     @Post('/talent/approve/:id')
     async ApprovedTalent(@Param('id') id: string){
         return await this.userService.approvedTalent(id)
     }
+    
+    
 
 
 
