@@ -51,8 +51,15 @@ export class UserController {
         return await this.userService.hiredTalent(hireInput, user)
     }
     
-    
+    @Post('/suspend/user/:id')
+    async SuspendUser(@Param('id') id: string){
+        return await this.userService.suspendUser(id)
+    }
 
+    @Post('/suspend/user/:id')
+    async SuspendTalent(@Param('id') id: string){
+        return await this.userService.suspendTalent(id)
+    }
 
 
 }

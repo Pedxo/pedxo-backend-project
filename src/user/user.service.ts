@@ -122,6 +122,47 @@ export class UserService {
 
     }
 
+    async suspendUser(id: string){
+        const user = await this.userModel.findById(id);
+        if (!user) {
+            throw new HttpException(`user with id ${id} does not exist`, HttpStatus.NOT_FOUND)
+        }
+
+        if (user.isTalent === true) {
+            const userid = user._id.toString()
+            
+            await this.talentModel.findOneAndUpdate(
+               {userId: userid},
+               { $set: { isTalentSuspended: true } },
+                {
+                new: true,
+                runValidators: true
+                }
+                 )
+        }
+
+        await this.userModel.findByIdAndUpdate(id,
+            {isSuspended: true},
+            {new: true, runValidators: true}
+        );
+
+        return  `user suspended successfully`;
+    }
+
+    async suspendTalent(id: string){
+        const talent = await this.talentModel.findById(id);
+        if (!talent) {
+            throw new HttpException(`talent with id ${id} does not exist`, HttpStatus.NOT_FOUND)
+        }
+
+        await this.talentModel.findByIdAndUpdate(id,
+            {isTalentSuspended: true},
+            {new: true, runValidators: true}
+        );
+
+        return  `talent suspended successfully`;
+    }
+
    async hiredTalent(hiredInput: HireTalentDTO, user: User){
         const {_id} = user;
 
