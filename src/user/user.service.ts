@@ -4,6 +4,8 @@ import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
 import { Talent } from './schema/talent.schema';
 import { BecomeTalentDTO } from './dto/create.talent.dto';
+import { HireTalentDTO } from './dto/hire.talent.dto';
+import { HireTalent } from './schema/hire.talent';
 
 @Injectable()
 export class UserService {
@@ -12,7 +14,10 @@ export class UserService {
     private userModel: Model<User>,
 
     @InjectModel(Talent.name)
-    private talentModel: Model<Talent>
+    private talentModel: Model<Talent>,
+
+    @InjectModel(HireTalent.name)
+    private hiredTalentModel: Model<HireTalent>
     ){}
 
     async findall(): Promise<User[]>{
@@ -67,9 +72,13 @@ export class UserService {
     //the sort will be changed to most rated talent;
     //another one is to look at the ui and remove the name and email inputs on the talent form because it is not necessary
     async findAllTalent():Promise<Talent[]>{
-        const talent = await this.talentModel.find({approved: true}).sort({createdAt: 'desc'}).lean();
+        const talent = await this.talentModel.find({
+            approved: true,
+           //isTalentSuspended: false
+        }).sort({createdAt: 'desc'}).lean();
 
-            return talent
+
+         return talent
         
     }
 
@@ -111,5 +120,25 @@ export class UserService {
             Response: `talent ${talentupdated.firstName, talentupdated.lastName} application approved successfully`
         }
 
+    }
+
+   async hiredTalent(hiredInput: HireTalentDTO, user: User){
+        const {_id} = user;
+
+        const {talentId, workingPeriod} = hiredInput;
+
+        const talent = await this.talentModel.findById(talentId);
+
+        if (talent.isTalentSuspended === true) {
+            throw new HttpException('can not hire this talent for now', HttpStatus.UNPROCESSABLE_ENTITY)
+        }
+
+       const hiredTalent = await this.hiredTalentModel.create({
+            talentId,
+            workingPeriod,
+            userId: _id
+        });
+
+        return hiredTalent
     }
 }

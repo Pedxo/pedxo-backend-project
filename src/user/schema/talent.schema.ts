@@ -45,6 +45,9 @@ export class Talent extends Document{
     @Prop({type: Boolean, default: false})
     approved:boolean;
 
+    @Prop({type: Boolean, default: false})
+    isTalentSuspended: boolean
+
 }
 
 export const TalentSchema = SchemaFactory.createForClass(Talent)

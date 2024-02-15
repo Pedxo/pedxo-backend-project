@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/auth/customGuard/guard.custom';
 import { CurrentUser } from 'src/common/decorator/current.logged.user';
 import { BecomeTalentDTO } from './dto/create.talent.dto';
 import { Talent } from './schema/talent.schema';
+import { HireTalentDTO } from './dto/hire.talent.dto';
 
 @Controller('user')
 
@@ -42,6 +43,12 @@ export class UserController {
     @Post('/talent/approve/:id')
     async ApprovedTalent(@Param('id') id: string){
         return await this.userService.approvedTalent(id)
+    }
+
+    @UseGuards(AuthGuard)
+    @Post('/hire/talent')
+    async hireTalent(@Body() hireInput: HireTalentDTO, @CurrentUser() user: User ){
+        return await this.userService.hiredTalent(hireInput, user)
     }
     
     
