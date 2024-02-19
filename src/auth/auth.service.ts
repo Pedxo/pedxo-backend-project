@@ -2,10 +2,10 @@ import { HttpException, HttpStatus, Injectable, InternalServerErrorException } f
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/user/schema/user.schema';
-import { CreateUserDTO } from './dto/create.user.dto';
+import { CreateUserDTO } from '../user/dto/create.user.dto';
 import { HashData, comparedHashed } from 'src/common/hashed/hashed.data';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUserDTO } from './dto/login.user.dto';
+import { LoginUserDTO } from '../user/dto/login.user.dto';
 import { ConfigService } from '@nestjs/config';
 
 

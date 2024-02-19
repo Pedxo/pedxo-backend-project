@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './schema/user.schema';
 import { AuthGuard } from 'src/auth/customGuard/guard.custom';
@@ -6,6 +6,7 @@ import { CurrentUser } from 'src/common/decorator/current.logged.user';
 import { BecomeTalentDTO } from './dto/create.talent.dto';
 import { Talent } from './schema/talent.schema';
 import { HireTalentDTO } from './dto/hire.talent.dto';
+import { UpdateUserDTO } from './dto/update.user.dto';
 
 @Controller('user')
 
@@ -49,6 +50,12 @@ export class UserController {
     @Post('/hire/talent')
     async hireTalent(@Body() hireInput: HireTalentDTO, @CurrentUser() user: User ){
         return await this.userService.hiredTalent(hireInput, user)
+    }
+
+    @UseGuards(AuthGuard)
+    @Put('/update/profile')
+    async updateUserProfile(@Body() updateBody: UpdateUserDTO, @CurrentUser() user: User){
+        return await this.userService.updateUpdateUserProfile(updateBody, user)
     }
     
     @Post('/suspend/user/:id')

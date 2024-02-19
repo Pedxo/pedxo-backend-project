@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
@@ -6,6 +6,7 @@ import { Talent } from './schema/talent.schema';
 import { BecomeTalentDTO } from './dto/create.talent.dto';
 import { HireTalentDTO } from './dto/hire.talent.dto';
 import { HireTalent } from './schema/hire.talent';
+import { UpdateUserDTO } from './dto/update.user.dto';
 
 @Injectable()
 export class UserService {
@@ -161,6 +162,22 @@ export class UserService {
         );
 
         return  `talent suspended successfully`;
+    }
+
+    async updateUpdateUserProfile(body: UpdateUserDTO, user: User){
+   try {
+    const id = user._id;
+   await this.userModel.findByIdAndUpdate(id, body, {new: true, runValidators: true}).lean();
+
+  return {
+    Response: `you have successfully updated your profile with`, body
+  };
+
+   } catch (error) {
+    console.log(error)
+    throw new InternalServerErrorException('server error')
+   }
+
     }
 
    async hiredTalent(hiredInput: HireTalentDTO, user: User){
