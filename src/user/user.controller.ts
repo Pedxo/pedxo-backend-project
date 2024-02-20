@@ -7,6 +7,7 @@ import { BecomeTalentDTO } from './dto/create.talent.dto';
 import { Talent } from './schema/talent.schema';
 import { HireTalentDTO } from './dto/hire.talent.dto';
 import { UpdateUserDTO } from './dto/update.user.dto';
+import { UpdateTalentProfileDTO } from './dto/update.talent.dto';
 
 @Controller('user')
 
@@ -24,6 +25,11 @@ export class UserController {
     @Get('/findAllTalent')
     async findAllTalent(): Promise<Talent[]>{
         return await this.userService.findAllTalent()
+    }
+
+    @Get('/findOneTalent/:id')
+    async findOneTalent(@Param('id') id: string): Promise<any>{
+        return await this.userService.findOneTalent(id)
     }
 
     @Get('/')
@@ -58,15 +64,36 @@ export class UserController {
         return await this.userService.updateUpdateUserProfile(updateBody, user)
     }
     
+
+    @UseGuards(AuthGuard)
+    @Put('/update/talent/profile')
+    async updateTalentProfile(@Body() updateBody: UpdateTalentProfileDTO, @CurrentUser() user: User){
+        return await this.userService.updateUpdateTalentProfile(updateBody, user)
+    }
+
+    //protected and only admin can acess it
     @Post('/suspend/user/:id')
     async SuspendUser(@Param('id') id: string){
         return await this.userService.suspendUser(id)
     }
 
-    @Post('/suspend/user/:id')
+    //protected and only admin can acess it
+    @Post('/suspend/talent/:id')
     async SuspendTalent(@Param('id') id: string){
         return await this.userService.suspendTalent(id)
     }
+
+    //protected and only admin can acess it
+    @Post('/unsuspend/user/:id')
+    async UnsuspendUser(@Param('id') id: string){
+        return await this.userService.UnsuspendUser(id)
+    }
+
+       //protected and only admin can acess it
+    @Post('/unsuspend/talent/:id')
+       async UnsuspendTalent(@Param('id') id: string){
+           return await this.userService.UnsuspendTalent(id)
+       }
 
 
 }

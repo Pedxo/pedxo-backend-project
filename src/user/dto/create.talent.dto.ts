@@ -7,15 +7,20 @@ export class BecomeTalentDTO{
     @IsNotEmpty()
     workPhone:string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     twitterLink:string;
 
-    @IsNotEmpty()
+    @IsOptional()
+    @IsString()
+    linkedIn:string;
+
+
+    @IsOptional()
     @IsString()
     city:string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     zipCode:number;
 

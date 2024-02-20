@@ -7,6 +7,7 @@ import { BecomeTalentDTO } from './dto/create.talent.dto';
 import { HireTalentDTO } from './dto/hire.talent.dto';
 import { HireTalent } from './schema/hire.talent';
 import { UpdateUserDTO } from './dto/update.user.dto';
+import { UpdateTalentProfileDTO } from './dto/update.talent.dto';
 
 @Injectable()
 export class UserService {
@@ -81,6 +82,15 @@ export class UserService {
 
          return talent
         
+    }
+
+    async findOneTalent(id: string): Promise<any>{
+        const talent = await this.talentModel.findById(id).lean()
+        if (!talent) {
+           throw new HttpException('talent not found', HttpStatus.NOT_FOUND);
+        }
+        return talent
+        // return `${talent.firstName} ${talent.lastName} ${talent.workEmail}`
     }
 
     async approvedTalent(id: string): Promise<any>{
@@ -164,20 +174,108 @@ export class UserService {
         return  `talent suspended successfully`;
     }
 
+
+    async UnsuspendUser(id: string){
+
+        const user = await this.userModel.findById(id);
+        if (!user) {
+            throw new HttpException(`user with id ${id} does not exist`, HttpStatus.NOT_FOUND)
+        }
+
+        if (user.isTalent === true) {
+            const userid = user._id.toString()
+            
+            await this.talentModel.findOneAndUpdate(
+               {userId: userid},
+               { $set: { isTalentSuspended: false } },
+                {
+                new: true,
+                runValidators: true
+                }
+                 )
+        }
+
+        await this.userModel.findByIdAndUpdate(id,
+            {isSuspended: false},
+            {new: true, runValidators: true}
+        );
+
+        return  `user not longer suspended`;
+
+    }
+
+
+    async UnsuspendTalent(id: string){
+        const talent = await this.talentModel.findById(id);
+        if (!talent) {
+            throw new HttpException(`talent with id ${id} does not exist`, HttpStatus.NOT_FOUND)
+        }
+
+        await this.talentModel.findByIdAndUpdate(id,
+            {isTalentSuspended: false},
+            {new: true, runValidators: true}
+        );
+
+        return  `talent no longer suspended`;
+    }
+
+
     async updateUpdateUserProfile(body: UpdateUserDTO, user: User){
    try {
     const id = user._id;
-   await this.userModel.findByIdAndUpdate(id, body, {new: true, runValidators: true}).lean();
+  const updatedProfile=  await this.userModel.findByIdAndUpdate(id, body, {new: true, runValidators: true}).lean();
 
+    if (!updatedProfile) {
+            throw new HttpException('your profile was not updated, try again', HttpStatus.CONFLICT)
+        }
   return {
     Response: `you have successfully updated your profile with`, body
   };
 
    } catch (error) {
+    if (error instanceof HttpException) {
+        throw error
+    }
     console.log(error)
     throw new InternalServerErrorException('server error')
    }
 
+    }
+
+    async updateUpdateTalentProfile(body: UpdateTalentProfileDTO, user: User){
+      try {
+        const id = user._id
+        const dbUser = await this.userModel.findById(id);
+ 
+        if (dbUser.isTalent === false) {
+         return
+        }
+ 
+        const talent = await this.talentModel.findOne({
+         userId: id
+        })
+ 
+        if (talent.isTalentSuspended === true) {
+         throw new HttpException(`you can't update your profile for now. kindly contact support for help`, HttpStatus.UNAUTHORIZED)
+        }
+ 
+        const talentId = talent._id;
+ 
+        const updatedTalent = await this.talentModel.findByIdAndUpdate(talentId, body, {new: true, runValidators: true})
+ 
+        if (!updatedTalent) {
+         throw new HttpException(`couldn't update your profile for now please try again`, HttpStatus.SERVICE_UNAVAILABLE)
+        }
+ 
+        return `updated successfully`
+      } catch (error) {
+        if (error instanceof HttpException) {
+            throw error
+        }
+
+        throw new InternalServerErrorException('server error')
+      }
+       
     }
 
    async hiredTalent(hiredInput: HireTalentDTO, user: User){
