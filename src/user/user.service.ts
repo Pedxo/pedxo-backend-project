@@ -278,23 +278,35 @@ export class UserService {
        
     }
 
-   async hiredTalent(hiredInput: HireTalentDTO, user: User){
-        const {_id} = user;
+   async hiredTalent(id: string, hiredInput: HireTalentDTO, user: User){
+  try {
+    const {_id} = user;
 
-        const {talentId, workingPeriod} = hiredInput;
+    const {workingPeriod} = hiredInput;
 
-        const talent = await this.talentModel.findById(talentId);
+    const talent = await this.talentModel.findById(id);
 
-        if (talent.isTalentSuspended === true) {
-            throw new HttpException('can not hire this talent for now', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
+    if (!talent) {
+        throw new HttpException('talent with such id not found',HttpStatus.NOT_FOUND)
+    }
 
-       const hiredTalent = await this.hiredTalentModel.create({
-            talentId,
-            workingPeriod,
-            userId: _id
-        });
+    if (talent.isTalentSuspended === true) {
+        throw new HttpException('can not hire this talent for now', HttpStatus.UNPROCESSABLE_ENTITY)
+    }
 
-        return hiredTalent
+   const hiredTalent = await this.hiredTalentModel.create({
+        talentId: id,
+        workingPeriod,
+        userId: _id
+    });
+
+    return hiredTalent
+  } catch (error) {
+    if (error instanceof HttpException) {
+        throw error
+    }
+    console.log(error)
+    throw new InternalServerErrorException('server error')
+  }
     }
 }

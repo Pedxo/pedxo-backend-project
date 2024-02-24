@@ -53,20 +53,20 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard)
-    @Post('/hire/talent')
-    async hireTalent(@Body() hireInput: HireTalentDTO, @CurrentUser() user: User ){
-        return await this.userService.hiredTalent(hireInput, user)
+    @Post('/hire/talent/:id')
+    async hireTalent(@Param('id') id: string, @Body() hireInput: HireTalentDTO, @CurrentUser() user: User ){
+        return await this.userService.hiredTalent(id, hireInput, user)
     }
 
     @UseGuards(AuthGuard)
-    @Put('/update/profile')
+    @Put('/update/profile')//users
     async updateUserProfile(@Body() updateBody: UpdateUserDTO, @CurrentUser() user: User){
         return await this.userService.updateUpdateUserProfile(updateBody, user)
     }
     
 
     @UseGuards(AuthGuard)
-    @Put('/update/talent/profile')
+    @Put('/update/talent/profile')//talents
     async updateTalentProfile(@Body() updateBody: UpdateTalentProfileDTO, @CurrentUser() user: User){
         return await this.userService.updateUpdateTalentProfile(updateBody, user)
     }

@@ -20,6 +20,9 @@ export class Talent extends Document{
     twitterLink:string;
 
     @Prop({type: String})
+    linkedIn: string
+
+    @Prop({type: String})
     city?:string;
 
     @Prop({type: Number})
