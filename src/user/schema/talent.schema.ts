@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { Document } from "mongoose";
-import { Skilled } from "../enum/talent.enum";
+import { ExperienedLevel, JobNatureNeeded, MySkills, WorkPattern } from "../enum/talent.skills.enum";
+import { User } from "./user.schema";
 
 @Schema({timestamps: true})
 export class Talent extends Document{
@@ -13,8 +14,8 @@ export class Talent extends Document{
     @Prop({type: String})
     workEmail?: string;
 
-    @Prop({type: String})
-    workPhone:string;
+    // @Prop({type: String})
+    // workPhone:string;
 
     @Prop({type: String})
     twitterLink:string;
@@ -28,19 +29,33 @@ export class Talent extends Document{
     @Prop({type: Number})
     zipCode:number;
 
-    @Prop({type: [String], required: true})
-    skills: string[];
+    @Prop({type: [String], enum: MySkills, required: true})
+    skills: MySkills[];
 
-    @Prop({type: String, enum: Skilled,  required: true})
-    experienedLevel: Skilled 
-
+    @Prop({type: String, enum: ExperienedLevel,  required: true})
+    experienedLevel: ExperienedLevel 
 
     @Prop({type: String})
-    workPattern:string;
+    studentType?:string;
 
+    @Prop({type: String})
+    nameOfSchoolOrBootCamp?:string;
+
+
+    @Prop({type: [String]})
+    graduationdate:string[];
+
+    @Prop({type: String})
+    yearOfExperienceInSales: string
+
+    @Prop({type: [String], enum: WorkPattern, required: true})
+    workPattern: WorkPattern[];
+
+    @Prop({type: [String], enum: JobNatureNeeded, required: true})
+    jobNature: JobNatureNeeded[]
 
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User'})
-    userId: string;
+    userId: User;
 
     @Prop({type: Object, default: null})
     image?:object;

@@ -32,27 +32,27 @@ export class UserService {
     async becomeTalent( user: User, body: BecomeTalentDTO): Promise<any>{
         const {email, firstName, lastName, _id} = user
 
-        const {workPhone, twitterLink, city, zipCode, skills, experienedLevel, image, workPattern} = body;
-        const talent = await this.talentModel.findOne({$or: [{workEmail: email}, {workPhone: workPhone}]}).lean();
+        const {twitterLink, city, zipCode, skills, experienedLevel, image, workPattern, jobNature, yearOfExperienceInSales, studentType, nameOfSchoolOrBootCamp, graduationdate, } = body;
+        const talent = await this.talentModel.findOne({workEmail: email}).lean();
+
+        // const talent = await this.talentModel.findOne({$or: [{workEmail: email}, {workPhone: workPhone}]}).lean();
 
         if (talent) {
-            if (talent.workEmail === email && talent.workPhone === workPhone) {
-                throw new HttpException('work email and phone has already being used by another talent', HttpStatus.UNPROCESSABLE_ENTITY)
-            }
             if (talent.workEmail === email) {
                 throw new HttpException('work email has already be used by another talent', HttpStatus.UNPROCESSABLE_ENTITY)
-            }
-            if (talent.workPhone === workPhone) {
-                throw new HttpException('can not use the phone number twice', HttpStatus.UNPROCESSABLE_ENTITY)
-            }
+            } 
         }
 
         await this.talentModel.create({
+            yearOfExperienceInSales,
+            studentType,
+            nameOfSchoolOrBootCamp,
+            graduationdate,
+            jobNature,
             firstName,
             lastName,
             workEmail: email,
             workPattern,
-            workPhone,
             twitterLink,
             city,
             zipCode,
@@ -74,14 +74,8 @@ export class UserService {
     //the sort will be changed to most rated talent;
     //another one is to look at the ui and remove the name and email inputs on the talent form because it is not necessary
     async findAllTalent():Promise<Talent[]>{
-        const talent = await this.talentModel.find({
-            approved: true,
-           //isTalentSuspended: false
-        }).sort({createdAt: 'desc'}).lean();
-
-
-         return talent
-        
+        const talent = await this.talentModel.find({ approved: true, isTalentSuspended: false}).sort({createdAt: 'desc'}).lean();
+         return talent   
     }
 
     async findOneTalent(id: string): Promise<any>{
@@ -90,133 +84,6 @@ export class UserService {
            throw new HttpException('talent not found', HttpStatus.NOT_FOUND);
         }
         return talent
-        // return `${talent.firstName} ${talent.lastName} ${talent.workEmail}`
-    }
-
-    async approvedTalent(id: string): Promise<any>{
-        const talent = await this.talentModel.findById(id).lean();
-
-        if (!talent) {
-            throw new HttpException(`talent with id ${id} doesn't exist`, HttpStatus.NOT_FOUND)
-        }
-
-        if (talent.approved === true) {
-            throw new HttpException('user application is already approved', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
-
-       const talentupdated = await this.talentModel.findByIdAndUpdate(id, {approved: true}, 
-            {
-            new: true,
-            runValidators: true
-            });
-
-
-        const userid = talent.userId;
-
-        if (talentupdated.approved = true) {
-         await this.userModel.findByIdAndUpdate(
-                userid, 
-                {isTalent: true},
-
-                {
-                    new: true,
-                    runValidators: true
-                }
-              
-                )
-
-        }
-        
-        return {
-            Response: `talent ${talentupdated.firstName, talentupdated.lastName} application approved successfully`
-        }
-
-    }
-
-    async suspendUser(id: string){
-        const user = await this.userModel.findById(id);
-        if (!user) {
-            throw new HttpException(`user with id ${id} does not exist`, HttpStatus.NOT_FOUND)
-        }
-
-        if (user.isTalent === true) {
-            const userid = user._id.toString()
-            
-            await this.talentModel.findOneAndUpdate(
-               {userId: userid},
-               { $set: { isTalentSuspended: true } },
-                {
-                new: true,
-                runValidators: true
-                }
-                 )
-        }
-
-        await this.userModel.findByIdAndUpdate(id,
-            {isSuspended: true},
-            {new: true, runValidators: true}
-        );
-
-        return  `user suspended successfully`;
-    }
-
-    async suspendTalent(id: string){
-        const talent = await this.talentModel.findById(id);
-        if (!talent) {
-            throw new HttpException(`talent with id ${id} does not exist`, HttpStatus.NOT_FOUND)
-        }
-
-        await this.talentModel.findByIdAndUpdate(id,
-            {isTalentSuspended: true},
-            {new: true, runValidators: true}
-        );
-
-        return  `talent suspended successfully`;
-    }
-
-
-    async UnsuspendUser(id: string){
-
-        const user = await this.userModel.findById(id);
-        if (!user) {
-            throw new HttpException(`user with id ${id} does not exist`, HttpStatus.NOT_FOUND)
-        }
-
-        if (user.isTalent === true) {
-            const userid = user._id.toString()
-            
-            await this.talentModel.findOneAndUpdate(
-               {userId: userid},
-               { $set: { isTalentSuspended: false } },
-                {
-                new: true,
-                runValidators: true
-                }
-                 )
-        }
-
-        await this.userModel.findByIdAndUpdate(id,
-            {isSuspended: false},
-            {new: true, runValidators: true}
-        );
-
-        return  `user not longer suspended`;
-
-    }
-
-
-    async UnsuspendTalent(id: string){
-        const talent = await this.talentModel.findById(id);
-        if (!talent) {
-            throw new HttpException(`talent with id ${id} does not exist`, HttpStatus.NOT_FOUND)
-        }
-
-        await this.talentModel.findByIdAndUpdate(id,
-            {isTalentSuspended: false},
-            {new: true, runValidators: true}
-        );
-
-        return  `talent no longer suspended`;
     }
 
 
@@ -278,25 +145,32 @@ export class UserService {
        
     }
 
-   async hiredTalent(id: string, hiredInput: HireTalentDTO, user: User){
+   async hiredTalent(hiredInput: HireTalentDTO, user: User){
   try {
     const {_id} = user;
-
-    const {workingPeriod} = hiredInput;
-
-    const talent = await this.talentModel.findById(id);
-
-    if (!talent) {
-        throw new HttpException('talent with such id not found',HttpStatus.NOT_FOUND)
+    if (!user || user.isSuspended === true) {
+        throw new HttpException('you can proceed with request', HttpStatus.FORBIDDEN)
     }
 
-    if (talent.isTalentSuspended === true) {
-        throw new HttpException('can not hire this talent for now', HttpStatus.UNPROCESSABLE_ENTITY)
-    }
+    const {name, email, whereYouLive, state, country, YourTitle, haveYouBuildSomePart, workStartDate, wantTalentAs, paymentPattern, yourCurrentJob, minimumToPayToTalent, website, githubLink, linkedIn, twitterLink} = hiredInput;
 
    const hiredTalent = await this.hiredTalentModel.create({
-        talentId: id,
-        workingPeriod,
+        name,
+        email,
+        whereYouLive,
+        state,
+        country,
+        YourTitle,
+        haveYouBuildSomePart,
+        workStartDate,
+        wantTalentAs,
+        paymentPattern,
+        yourCurrentJob,
+        minimumToPayToTalent,
+        website,
+        githubLink,
+        linkedIn,
+        twitterLink,
         userId: _id
     });
 

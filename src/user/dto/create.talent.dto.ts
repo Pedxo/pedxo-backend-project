@@ -1,11 +1,9 @@
-import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPhoneNumber, IsString } from "class-validator";
-import { Skilled } from "../enum/talent.enum";
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, isEnum } from "class-validator";
+import { ExperienedLevel, JobNatureNeeded, MySkills, WorkPattern } from "../enum/talent.skills.enum";
+
 
 
 export class BecomeTalentDTO{
-    @IsPhoneNumber()
-    @IsNotEmpty()
-    workPhone:string;
 
     @IsOptional()
     @IsString()
@@ -27,15 +25,42 @@ export class BecomeTalentDTO{
 
     @IsNotEmpty()
     @IsArray()
+    @IsString({ each: true })
+    @IsEnum(MySkills, { each: true })
     skills: string[];
 
     @IsNotEmpty()
-    @IsEnum(Skilled)
-    experienedLevel: Skilled;
+    @IsEnum(ExperienedLevel)
+    experienedLevel: ExperienedLevel;
 
     @IsNotEmpty()
+    @IsArray()
+    @IsString({ each: true })
+    @IsEnum(WorkPattern, { each: true })
+    workPattern:string[];
+
+    @IsNotEmpty()
+    @IsArray()
+    @IsString({ each: true })
+    @IsEnum(JobNatureNeeded, { each: true })
+    jobNature: string[];
+
     @IsString()
-    workPattern?:string;
+    @IsOptional()
+    yearOfExperienceInSales?: string
+
+    @IsString()
+    @IsOptional()
+    studentType?:string;
+
+    @IsString()
+    @IsOptional()
+    nameOfSchoolOrBootCamp?:string;
+
+
+    @IsString()
+    @IsOptional()
+    graduationdate:string[];
 
     @IsOptional()
     @IsString()

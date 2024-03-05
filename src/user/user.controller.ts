@@ -46,16 +46,11 @@ export class UserController {
     }
 
 
-    //@UseGuards(AuthGuard)//i will use this to make only admin to only approve talent
-    @Post('/talent/approve/:id')
-    async ApprovedTalent(@Param('id') id: string){
-        return await this.userService.approvedTalent(id)
-    }
 
     @UseGuards(AuthGuard)
-    @Post('/hire/talent/:id')
-    async hireTalent(@Param('id') id: string, @Body() hireInput: HireTalentDTO, @CurrentUser() user: User ){
-        return await this.userService.hiredTalent(id, hireInput, user)
+    @Post('/hire/talent')
+    async hireTalent(@Body() hireInput: HireTalentDTO, @CurrentUser() user: User ){
+        return await this.userService.hiredTalent( hireInput, user)
     }
 
     @UseGuards(AuthGuard)
@@ -70,30 +65,5 @@ export class UserController {
     async updateTalentProfile(@Body() updateBody: UpdateTalentProfileDTO, @CurrentUser() user: User){
         return await this.userService.updateUpdateTalentProfile(updateBody, user)
     }
-
-    //protected and only admin can acess it
-    @Post('/suspend/user/:id')
-    async SuspendUser(@Param('id') id: string){
-        return await this.userService.suspendUser(id)
-    }
-
-    //protected and only admin can acess it
-    @Post('/suspend/talent/:id')
-    async SuspendTalent(@Param('id') id: string){
-        return await this.userService.suspendTalent(id)
-    }
-
-    //protected and only admin can acess it
-    @Post('/unsuspend/user/:id')
-    async UnsuspendUser(@Param('id') id: string){
-        return await this.userService.UnsuspendUser(id)
-    }
-
-       //protected and only admin can acess it
-    @Post('/unsuspend/talent/:id')
-       async UnsuspendTalent(@Param('id') id: string){
-           return await this.userService.UnsuspendTalent(id)
-       }
-
 
 }
