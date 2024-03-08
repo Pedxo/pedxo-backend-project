@@ -51,8 +51,8 @@ export class HireTalent extends Document{
     @Prop({type: String})
     twitterLink: string
 
-    @Prop({type: String})
-    talentId: string;
+    @Prop({type: [String]})
+    talentAssignedId?: string[];
 
     @Prop({type: Boolean, default: false})
     wasHired: boolean;

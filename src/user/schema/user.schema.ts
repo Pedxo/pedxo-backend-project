@@ -25,8 +25,6 @@ export class User extends Document{
     @Prop({type: Boolean, default: false})
     isTalent: boolean
 
-    //might remove it during production
-   // userid: any;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)
