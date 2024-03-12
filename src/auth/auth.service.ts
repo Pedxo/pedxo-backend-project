@@ -28,18 +28,14 @@ export class AuthService {
 
     if (userExist) {
       if (userExist.email === email && userExist.userName === userName) {
-        throw new BadRequestException(
-          'user with email and username already exist',
-        );
+        throw new BadRequestException();
       }
 
       if (userExist.email === email) {
-        throw new BadRequestException(
-          'user with same email address already exist',
-        );
+        throw new BadRequestException();
       }
       if (userExist.userName === userName) {
-        throw new BadRequestException('user with same username already exist');
+        throw new BadRequestException();
       }
     }
 
