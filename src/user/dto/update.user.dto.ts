@@ -1,12 +1,11 @@
-import { PartialType } from "@nestjs/swagger";
-import { CreateUserDTO } from "./create.user.dto";
-import { Exclude } from "class-transformer";
+import { PartialType } from '@nestjs/swagger';
+import { CreateUserDTO } from './create.user.dto';
+import { Exclude } from 'class-transformer';
 
-export class UpdateUserDTO extends PartialType(CreateUserDTO){
+export class Update extends PartialType(CreateUserDTO) {
+  @Exclude()
+  password: string;
 
-    @Exclude()
-    password: string
-
-    @Exclude()
-    email: string
+  @Exclude()
+  email: string;
 }

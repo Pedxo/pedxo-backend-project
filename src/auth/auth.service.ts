@@ -1,99 +1,70 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from 'src/user/schema/user.schema';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDTO } from '../user/dto/create.user.dto';
 import { HashData, comparedHashed } from 'src/common/hashed/hashed.data';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDTO } from '../user/dto/login.user.dto';
 import { ConfigService } from '@nestjs/config';
-
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel(User.name)
-    private userModel: Model<User>,
-    private jwtService: JwtService,
-    private configService: ConfigService
-    ){}
+  constructor(
+    private userService: UserService,
+    private jwt: JwtService,
+  ) {}
 
-    //sign up account endpoint
-    async create(body: CreateUserDTO){
-        
-        const {email, firstName, lastName, userName, password, confiremedPassword } = body;
+  //sign up account endpoint
+  async create(body: CreateUserDTO) {
+    const { email, userName } = body;
 
-        const user = await this.userModel.findOne({
-            $or: [
-                {email: email}, {userName: userName}
-            ]
-        });
+    const userExist = await this.userService.getByEmailOrUserName(
+      email,
+      userName,
+    );
 
-        if (password !== confiremedPassword) {
-            throw new HttpException('password and confirmed password must matched', HttpStatus.UNPROCESSABLE_ENTITY)
-        }
+    if (userExist) {
+      if (userExist.email === email && userExist.userName === userName) {
+        throw new BadRequestException(
+          'user with email and username already exist',
+        );
+      }
 
-        if (user) {
-
-            if (user.email ===email && user.userName === userName) {
-                throw new HttpException('user with email and username already exist', HttpStatus.UNPROCESSABLE_ENTITY)
-            }
-
-            if (user.email===email) {
-                throw new HttpException('user with same email address already exist', HttpStatus.UNPROCESSABLE_ENTITY)
-            }
-            if (user.userName === userName) {
-                throw new HttpException('user with same username already exist', HttpStatus.UNPROCESSABLE_ENTITY)
-            }
-
-
-        }
-
-       const hashPassword=  await HashData(password);
-
-        const newuser = await this.userModel.create({
-            email,
-            firstName,
-            lastName,
-            password: hashPassword,
-            userName
-        })
-
-        const payload = {
-          user: newuser._id
-        }
-        const token = await this.jwtService.signAsync( payload, {
-            secret: this.configService.get<string>('JWT_SECRET')
-        } )
-       return token
+      if (userExist.email === email) {
+        throw new BadRequestException(
+          'user with same email address already exist',
+        );
+      }
+      if (userExist.userName === userName) {
+        throw new BadRequestException('user with same username already exist');
+      }
     }
 
-    //Log in endpoint
-    async loginUser(body: LoginUserDTO){
-        const {email, password} = body
-       try {
-        const user = await this.userModel.findOne({email: email});
-        if (!user) {
-            throw new HttpException('user not found', HttpStatus.NOT_FOUND)
-        }
+    return await this.userService.create(body);
+  }
 
-        if (await comparedHashed(password, user.password) === false) {
-            throw new HttpException('password do not matched', HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-
-        const payload= {
-           _id: user._id,
-           firstName: user.firstName,
-           lastName: user.lastName,
-           email: user.email
-        }
-        const token = await this.jwtService.signAsync(payload);
-        return token
-       } catch (error) {
-        if (error instanceof HttpException) {
-            throw error
-        }
-        console.log(error)
-        throw new InternalServerErrorException('server error')
-       }
+  //Log in endpoint
+  async login(body: LoginUserDTO) {
+    const { email, password } = body;
+    const user = await this.userService.getByEmailOrUserName(email);
+    if (!user) {
+      throw new NotFoundException('user not found');
     }
+
+    if ((await comparedHashed(password, user.password)) === false) {
+      throw new BadRequestException('password do not matched');
+    }
+
+    const payload = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    };
+    const token = await this.jwt.signAsync(payload);
+    return token;
+  }
 }

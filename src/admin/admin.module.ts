@@ -3,14 +3,12 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/user/schema/user.schema';
-import { Talent, TalentSchema } from 'src/user/schema/talent.schema';
+import { UserModule } from 'src/user/user.module';
+import { TalentModule } from 'src/talent/talent.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
-    MongooseModule.forFeature([{name: Talent.name, schema: TalentSchema}])
-  ],
+  imports: [UserModule, TalentModule],
   controllers: [AdminController],
-  providers: [AdminService]
+  providers: [AdminService],
 })
 export class AdminModule {}
