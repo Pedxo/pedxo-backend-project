@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateUserDTO } from '../user/dto/create.user.dto';
 import { HashData, comparedHashed } from 'src/common/hashed/hashed.data';
@@ -28,14 +29,14 @@ export class AuthService {
 
     if (userExist) {
       if (userExist.email === email && userExist.userName === userName) {
-        throw new BadRequestException();
+        throw new UnprocessableEntityException();
       }
 
       if (userExist.email === email) {
-        throw new BadRequestException();
+        throw new UnprocessableEntityException();
       }
       if (userExist.userName === userName) {
-        throw new BadRequestException();
+        throw new UnprocessableEntityException();
       }
     }
 
