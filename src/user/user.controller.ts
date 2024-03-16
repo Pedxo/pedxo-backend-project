@@ -39,4 +39,9 @@ export class UserController {
   async update(@Body() payload: Update, @CurrentUser() user: User) {
     return await this.userService.update(payload, user);
   }
+
+  @Get('delete/:username')
+  async deleteUser(@Param('username') username: string) {
+    return await this.userService.deleteUser(username);
+  }
 }

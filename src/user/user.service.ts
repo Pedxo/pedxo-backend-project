@@ -94,4 +94,9 @@ export class UserService {
       { new: true },
     );
   }
+
+  async deleteUser(payload: string) {
+    await this.userModel.findOneAndDelete({ userName: payload }, { new: true });
+    return 'deleted';
+  }
 }
