@@ -29,14 +29,16 @@ export class AuthService {
 
     if (userExist) {
       if (userExist.email === email && userExist.userName === userName) {
-        throw new UnprocessableEntityException();
+        throw new UnprocessableEntityException(
+          'email and username already exist',
+        );
       }
 
       if (userExist.email === email) {
-        throw new UnprocessableEntityException();
+        throw new UnprocessableEntityException('email already exist');
       }
       if (userExist.userName === userName) {
-        throw new UnprocessableEntityException();
+        throw new UnprocessableEntityException('username already exit');
       }
     }
 
