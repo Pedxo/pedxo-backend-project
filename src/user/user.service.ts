@@ -21,19 +21,20 @@ export class UserService {
 
     const hashPassword = await HashData(password);
 
-    const newUser = await this.userModel.create({
+    await this.userModel.create({
       ...payload,
       password: hashPassword,
     });
 
-    const jwtPayload = {
-      _id: newUser._id,
-      firstName: newUser.firstName,
-      lastName: newUser.lastName,
-      email: newUser.email,
-    };
-    const token = this.jwt.sign(jwtPayload);
-    return token;
+    return `success`;
+    // const jwtPayload = {
+    //   _id: newUser._id,
+    //   firstName: newUser.firstName,
+    //   lastName: newUser.lastName,
+    //   email: newUser.email,
+    // };
+    // const token = this.jwt.sign(jwtPayload);
+    // return token;
   }
 
   async getAll(): Promise<User[]> {
