@@ -96,7 +96,15 @@ export class UserService {
   }
 
   async deleteUser(payload: string) {
-    await this.userModel.findOneAndDelete({ userName: payload }, { new: true });
+    const user = await this.userModel.findOneAndDelete(
+      { userName: payload },
+      { new: true },
+    );
+    if (!user) {
+      throw new NotFoundException(
+        `user with username ${payload} doesn't exist`,
+      );
+    }
     return 'deleted';
   }
 }
