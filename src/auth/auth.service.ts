@@ -20,6 +20,28 @@ export class AuthService {
 
   //sign up account endpoint
   async create(body: CreateUserDTO) {
+    const { email, userName } = body;
+
+    const userExist = await this.userService.getByEmailOrUserName(
+      email,
+      userName,
+    );
+
+    if (userExist) {
+      if (userExist.email === email && userExist.userName === userName) {
+        throw new UnprocessableEntityException(
+          'email and username already exist',
+        );
+      }
+
+      if (userExist.email === email) {
+        throw new UnprocessableEntityException('email already exist');
+      }
+      if (userExist.userName === userName) {
+        throw new UnprocessableEntityException('username already exit');
+      }
+    }
+
     return await this.userService.create(body);
   }
 

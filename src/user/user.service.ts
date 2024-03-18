@@ -18,33 +18,17 @@ export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(payload: CreateUserDTO) {
-    try {
-      const { password, userName } = payload;
-      const existingUser = await this.userModel.findOne({ userName });
-      if (existingUser) {
-        throw new ConflictException(`username already exists`);
-      }
+    const { password } = payload;
 
-      const hashPassword = await HashData(password);
+    const hashPassword = await HashData(password);
 
-      const result = await this.userModel.create({
-        ...payload,
-        password: hashPassword,
-      });
+    const result = await this.userModel.create({
+      ...payload,
+      password: hashPassword,
+    });
 
-      delete result['_doc'].password;
-      return result;
-    } catch (error) {
-      if (error.code === 11000) {
-        throw new ConflictException(
-          `${Object.keys(error.keyValue)} already exists`,
-        );
-      } else {
-        throw new InternalServerErrorException(
-          error.response?.message || 'Something went wrong',
-        );
-      }
-    }
+    delete result['_doc'].password;
+    return 'success';
   }
 
   async getAll(): Promise<User[]> {
