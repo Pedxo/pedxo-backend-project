@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
@@ -10,31 +15,36 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
-    private jwt: JwtService,
-    private config: ConfigService,
-  ) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async create(payload: CreateUserDTO) {
-    const { password } = payload;
+    try {
+      const { password, userName } = payload;
+      const existingUser = await this.userModel.findOne({ userName });
+      if (existingUser) {
+        throw new ConflictException(`username already exists`);
+      }
 
-    const hashPassword = await HashData(password);
+      const hashPassword = await HashData(password);
 
-    await this.userModel.create({
-      ...payload,
-      password: hashPassword,
-    });
+      const result = await this.userModel.create({
+        ...payload,
+        password: hashPassword,
+      });
 
-    return `success`;
-    // const jwtPayload = {
-    //   _id: newUser._id,
-    //   firstName: newUser.firstName,
-    //   lastName: newUser.lastName,
-    //   email: newUser.email,
-    // };
-    // const token = this.jwt.sign(jwtPayload);
-    // return token;
+      delete result['_doc'].password;
+      return result;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ConflictException(
+          `${Object.keys(error.keyValue)} already exists`,
+        );
+      } else {
+        throw new InternalServerErrorException(
+          error.response?.message || 'Something went wrong',
+        );
+      }
+    }
   }
 
   async getAll(): Promise<User[]> {
@@ -94,7 +104,6 @@ export class UserService {
       { new: true },
     );
   }
-
   async deleteUser(payload: string) {
     const user = await this.userModel.findOneAndDelete(
       { userName: payload },
