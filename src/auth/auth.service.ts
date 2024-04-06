@@ -5,17 +5,24 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { CreateUserDTO } from '../user/dto/create.user.dto';
-import { HashData, comparedHashed } from 'src/common/hashed/hashed.data';
+import { comparedHashed, HashData } from 'src/common/hashed/hashed.data';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDTO } from '../user/dto/login.user.dto';
-import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
+import { OtpService } from '../otp/service/otp.service';
+import {
+  ForgetPasswordDto,
+  ResetPasswordDto,
+  VerifyEmailDto,
+  VerifyForgetPasswordDto,
+} from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwt: JwtService,
+    private otpService: OtpService,
   ) {}
 
   //sign up account endpoint
@@ -65,5 +72,48 @@ export class AuthService {
     };
     const token = await this.jwt.signAsync(payload);
     return token;
+  }
+
+  async verifyEmail(payload: VerifyEmailDto) {
+    const { email, code } = payload;
+
+    const user = await this.userService.getByEmail(email);
+
+    await this.otpService.verifyOTP({ email, code });
+
+    if (user.isEmailVerified) {
+      throw new BadRequestException('Your account is verify already');
+    }
+
+    user.isEmailVerified = true;
+
+    await user.save();
+
+    return user;
+  }
+
+  async forgotPassword(payload: ForgetPasswordDto) {
+    const { email } = payload;
+    await this.userService.getByEmail(email);
+    await this.otpService.sendOtp(email);
+    return `Otp send, kindly check your email`;
+  }
+
+  async resetPassword(
+    payload: VerifyForgetPasswordDto,
+    passwordInput: ResetPasswordDto,
+  ) {
+    const { email, code } = payload;
+    const { password } = passwordInput;
+
+    const user = await this.userService.getByEmail(email);
+    await this.otpService.verifyOTP({ email, code });
+
+    const hashedPassword = await HashData(password);
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return `Password Change Successfully`;
   }
 }

@@ -1,7 +1,5 @@
 import {
-  ConflictException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,12 +8,14 @@ import { Model } from 'mongoose';
 import { CreateUserDTO } from './dto/create.user.dto';
 import { HashData } from 'src/common/hashed/hashed.data';
 import { Update } from './dto/update.user.dto';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { OtpService } from 'src/otp/service/otp.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private otpService: OtpService,
+  ) {}
 
   async create(payload: CreateUserDTO) {
     const { password } = payload;
@@ -26,6 +26,8 @@ export class UserService {
       ...payload,
       password: hashPassword,
     });
+
+    await this.otpService.sendOtp(result.email);
 
     delete result['_doc'].password;
     return 'success';
@@ -59,6 +61,14 @@ export class UserService {
 
   async getById(id: string) {
     const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new NotFoundException('user is not found');
+    }
+    return user;
+  }
+
+  async getByEmail(email: string) {
+    const user = await this.userModel.findOne({ email });
     if (!user) {
       throw new NotFoundException('user is not found');
     }

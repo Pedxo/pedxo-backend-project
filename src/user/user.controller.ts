@@ -4,7 +4,9 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -24,18 +26,18 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('profile')
+  @Get('/profile')
   async dashboard(@CurrentUser() user: User) {
     return user;
   }
 
-  @Get(':id')
+  @Get('findOne/:id')
   async getById(@Param('id') id: string): Promise<User> {
     return await this.userService.getById(id);
   }
 
   @UseGuards(AuthGuard)
-  @Patch()
+  @Patch('update')
   async update(@Body() payload: Update, @CurrentUser() user: User) {
     return await this.userService.update(payload, user);
   }

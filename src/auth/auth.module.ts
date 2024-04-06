@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './customGuard/guard.custom';
 import { UserModule } from 'src/user/user.module';
+import { OtpModule } from 'src/otp/otp.module';
 
 //module decorator
 @Module({
@@ -21,6 +22,7 @@ import { UserModule } from 'src/user/user.module';
       inject: [ConfigService],
     }),
     UserModule,
+    OtpModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard],
