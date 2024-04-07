@@ -58,7 +58,7 @@ export class OtpService {
       throw new UnprocessableEntityException('error occur while sending otp');
     }
 
-    //await this.mailService.sendMessage(email, subject, template);
+    await this.mailService.sendMessage(email, subject, template);
 
     return true;
   }

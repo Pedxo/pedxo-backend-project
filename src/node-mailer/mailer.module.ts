@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailService } from './service/email.service';
+import { ENVIRONMENT } from 'src/common/constant/enivronment/enviroment';
 @Module({
   imports: [
     MailerModule.forRoot({
       transport: {
         service: 'gmail',
         auth: {
-          user: '',
-          pass: '',
+          user: ENVIRONMENT.GOOGLE.SMTP_USER,
+          pass: ENVIRONMENT.GOOGLE.AUTH_PASS,
         },
       },
 
