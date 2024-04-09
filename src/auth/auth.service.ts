@@ -12,6 +12,7 @@ import { UserService } from 'src/user/user.service';
 import { OtpService } from '../otp/service/otp.service';
 import {
   ForgetPasswordDto,
+  RequestOtpDto,
   ResetPasswordDto,
   VerifyEmailDto,
   VerifyForgetPasswordDto,
@@ -119,5 +120,15 @@ export class AuthService {
     await user.save();
 
     return `Password Change Successfully`;
+  }
+  async requestOtp(payload: RequestOtpDto) {
+    const { email, type } = payload;
+
+    const user = await this.userService.getByEmail(email);
+    const otp = await this.otpService.sendOtp({
+      email: user.email,
+      type: type,
+    });
+    return otp;
   }
 }

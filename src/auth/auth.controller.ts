@@ -4,6 +4,7 @@ import { CreateUserDTO } from '../user/dto/create.user.dto';
 import { LoginUserDTO } from '../user/dto/login.user.dto';
 import {
   ForgetPasswordDto,
+  RequestOtpDto,
   ResetPasswordDto,
   VerifyEmailDto,
   VerifyForgetPasswordDto,
@@ -39,5 +40,10 @@ export class AuthController {
     @Body() passwordInput: ResetPasswordDto,
   ) {
     return await this.authService.resetPassword(payload, passwordInput);
+  }
+
+  @Post('request-otp')
+  async requestOtp(@Body() payload: RequestOtpDto) {
+    return await this.authService.requestOtp(payload);
   }
 }

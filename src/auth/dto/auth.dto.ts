@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { OtpType } from 'src/otp/enum/opt.type.enum';
 
 export class VerifyEmailDto {
   @IsNotEmpty()
@@ -23,3 +24,13 @@ export class ResetPasswordDto {
 }
 
 export class VerifyForgetPasswordDto extends VerifyEmailDto {}
+
+export class RequestOtpDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNotEmpty()
+  @IsEnum(OtpType)
+  type: string;
+}
