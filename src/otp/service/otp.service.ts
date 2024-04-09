@@ -3,12 +3,13 @@ import {
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { CreateOtpDTO, VerifyOTPDto } from '../dto/otp.dto';
+import { CreateOtpDTO, SentOtpDto, VerifyOTPDto } from '../dto/otp.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { OTP, OtpDocument } from '../schema/otp.schema';
 import { Model } from 'mongoose';
 import { token } from 'src/common/constant/generate.string';
 import { EmailService } from 'src/node-mailer/service/email.service';
+import { OtpType } from '../enum/opt.type.enum';
 
 @Injectable()
 export class OtpService {
@@ -45,12 +46,22 @@ export class OtpService {
     }
     return otp;
   }
-  async sendOtp(email: string) {
+  async sendOtp(payload: SentOtpDto) {
+    const { email, type } = payload;
     //generate the code
     const code = token;
 
-    const template = `Kindly verify your action user this link https://pedxo.com/?${code}`;
-    const subject = `Action Request`;
+    let template;
+    let subject;
+
+    if (type === OtpType.EMAIL_VERIFICATION) {
+      template = `Kindly verify your action user this link to verify your account https://pedxo-backend.onrender.com/verify-email/?email=${email}&code=${code}`;
+      subject = `Action Request`;
+    }
+    if (type === OtpType.RESET_PASSWORD) {
+      template = `Kindly verify your action using this link to reset your password https://pedxo-backend.onrender.com/reset-password/?email=${email}&code=${code}`;
+      subject = `Action Request`;
+    }
 
     //create otp
     const otp = await this.createOtp({ email, code });

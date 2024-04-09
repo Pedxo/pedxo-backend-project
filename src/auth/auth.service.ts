@@ -16,6 +16,7 @@ import {
   VerifyEmailDto,
   VerifyForgetPasswordDto,
 } from './dto/auth.dto';
+import { OtpType } from 'src/otp/enum/opt.type.enum';
 
 @Injectable()
 export class AuthService {
@@ -95,7 +96,10 @@ export class AuthService {
   async forgotPassword(payload: ForgetPasswordDto) {
     const { email } = payload;
     await this.userService.getByEmail(email);
-    await this.otpService.sendOtp(email);
+    await this.otpService.sendOtp({
+      email: email,
+      type: OtpType.RESET_PASSWORD,
+    });
     return `Otp send, kindly check your email`;
   }
 

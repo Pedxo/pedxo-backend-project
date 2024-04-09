@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
@@ -9,6 +6,7 @@ import { CreateUserDTO } from './dto/create.user.dto';
 import { HashData } from 'src/common/hashed/hashed.data';
 import { Update } from './dto/update.user.dto';
 import { OtpService } from 'src/otp/service/otp.service';
+import { OtpType } from 'src/otp/enum/opt.type.enum';
 
 @Injectable()
 export class UserService {
@@ -27,7 +25,10 @@ export class UserService {
       password: hashPassword,
     });
 
-    await this.otpService.sendOtp(result.email);
+    await this.otpService.sendOtp({
+      email: result.email,
+      type: OtpType.EMAIL_VERIFICATION,
+    });
 
     delete result['_doc'].password;
     return 'success';
