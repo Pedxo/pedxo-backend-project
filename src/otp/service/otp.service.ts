@@ -55,11 +55,11 @@ export class OtpService {
     let subject;
 
     if (type === OtpType.EMAIL_VERIFICATION) {
-      template = `Kindly verify your action user this link to verify your account https://pedxo-backend.onrender.com/verify-email/?email=${email}&code=${code}`;
+      template = `Kindly verify your action user this link to verify your account https://pedxo.netlify.app/login/?email=${email}&code=${code}`;
       subject = `Action Request`;
     }
     if (type === OtpType.RESET_PASSWORD) {
-      template = `Kindly verify your action using this link to reset your password https://pedxo-backend.onrender.com/reset-password/?email=${email}&code=${code}`;
+      template = `Kindly verify your action using this link to reset your password https://pedxo.netlify.app/reset-password/update/?email=${email}&code=${code}`;
       subject = `Action Request`;
     }
 
