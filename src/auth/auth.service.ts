@@ -91,7 +91,7 @@ export class AuthService {
 
     await user.save();
 
-    return user;
+    return 'Account is now verified';
   }
 
   async forgotPassword(payload: ForgetPasswordDto) {
