@@ -108,12 +108,8 @@ export class AuthService {
   async verifyPasswordOtp(payload: VerifyForgetPasswordDto) {
     const { encodedEmail, encodedCode } = payload;
 
-    console.log({ encodedEmail, encodedCode });
-
     const email = decode(encodedEmail);
     const code = decode(encodedCode);
-
-    console.log({ email, code });
 
     const user = await this.userService.getByEmail(email);
     const otp = await this.otpService.verifyOTP({ email, code });
