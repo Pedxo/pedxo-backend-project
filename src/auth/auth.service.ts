@@ -78,7 +78,10 @@ export class AuthService {
   }
 
   async verifyEmail(payload: VerifyEmailDto) {
-    const { email, code } = payload;
+    const { encodedEmail, encodedCode } = payload;
+
+    const email = decode(encodedEmail);
+    const code = decode(encodedCode);
 
     const user = await this.userService.getByEmail(email);
 

@@ -3,12 +3,12 @@ import { OtpType } from 'src/otp/enum/opt.type.enum';
 
 export class VerifyEmailDto {
   @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  @IsString()
+  encodedEmail: string;
 
   @IsNotEmpty()
   @IsString()
-  code: string;
+  encodedCode: string;
 }
 
 export class ForgetPasswordDto {
