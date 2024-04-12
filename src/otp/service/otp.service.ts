@@ -59,12 +59,12 @@ export class OtpService {
     const encodedCode = encode(code);
 
     if (type === OtpType.EMAIL_VERIFICATION) {
-      template = `Kindly verify your action user this link to verify your account https://pedxo.netlify.app/login/?email=${encodedEmail}&code=${encodedCode}`;
+      template = `Kindly verify your action user this link to verify your account https://pedxo-backend.onrender.com/?encodedEmail=${encodedEmail}&encodedCode=${encodedCode}`;
       subject = `Action Request`;
     }
 
     if (type === OtpType.RESET_PASSWORD) {
-      template = `Kindly verify your action using this link to reset your password https://pedxo.netlify.app/reset-password/update/?email=${encodedEmail}&code=${encodedCode}`;
+      template = `Kindly verify your action using this link to reset your password https://pedxo-backend.onrender.com/auth/verify-reset-password-otp/?encodedEmail=${encodedEmail}&encodedCode=${encodedCode}`;
       subject = `Action Request`;
     }
 

@@ -18,6 +18,7 @@ import {
   VerifyForgetPasswordDto,
 } from './dto/auth.dto';
 import { OtpType } from 'src/otp/enum/opt.type.enum';
+import { decode, encode } from 'base-64';
 
 @Injectable()
 export class AuthService {
@@ -104,15 +105,28 @@ export class AuthService {
     return `Otp send, kindly check your email`;
   }
 
-  async resetPassword(
-    payload: VerifyForgetPasswordDto,
-    passwordInput: ResetPasswordDto,
-  ) {
-    const { email, code } = payload;
-    const { password } = passwordInput;
+  async verifyPasswordOtp(payload: VerifyForgetPasswordDto) {
+    const { encodedEmail, encodedCode } = payload;
+
+    console.log({ encodedEmail, encodedCode });
+
+    const email = decode(encodedEmail);
+    const code = decode(encodedCode);
+
+    console.log({ email, code });
 
     const user = await this.userService.getByEmail(email);
-    await this.otpService.verifyOTP({ email, code });
+    const otp = await this.otpService.verifyOTP({ email, code });
+
+    if (otp) {
+      return user;
+    }
+  }
+
+  async resetPassword(payload: ResetPasswordDto) {
+    const { email, password } = payload;
+
+    const user = await this.userService.getByEmail(email);
 
     const hashedPassword = await HashData(password);
     user.password = hashedPassword;

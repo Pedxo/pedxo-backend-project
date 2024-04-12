@@ -21,9 +21,21 @@ export class ResetPasswordDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 }
 
-export class VerifyForgetPasswordDto extends VerifyEmailDto {}
+export class VerifyForgetPasswordDto {
+  @IsNotEmpty()
+  @IsString()
+  encodedEmail: string;
+
+  @IsNotEmpty()
+  @IsString()
+  encodedCode: string;
+}
 
 export class RequestOtpDto {
   @IsEmail()
