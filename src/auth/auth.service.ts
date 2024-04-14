@@ -85,7 +85,7 @@ export class AuthService {
 
     const user = await this.userService.getByEmail(email);
 
-    await this.otpService.verifyOTP({ email, code });
+    await this.otpService.verifyOTP({ code });
 
     if (user.isEmailVerified) {
       throw new BadRequestException('Your account is verify already');
@@ -109,16 +109,17 @@ export class AuthService {
   }
 
   async verifyPasswordOtp(payload: VerifyForgetPasswordDto) {
-    const { encodedEmail, encodedCode } = payload;
+    const { encodedCode } = payload;
 
-    const email = decode(encodedEmail);
+    console.log('me and u');
+    //const email = decode(encodedEmail);
     const code = decode(encodedCode);
 
-    const user = await this.userService.getByEmail(email);
-    const otp = await this.otpService.verifyOTP({ email, code });
+    // const user = await this.userService.getByEmail(email);
+    const otp = await this.otpService.verifyOTP({ code });
 
     if (otp) {
-      return user;
+      return 'success';
     }
   }
 

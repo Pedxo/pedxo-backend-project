@@ -28,9 +28,9 @@ export class ResetPasswordDto {
 }
 
 export class VerifyForgetPasswordDto {
-  @IsNotEmpty()
-  @IsString()
-  encodedEmail: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // encodedEmail: string;
 
   @IsNotEmpty()
   @IsString()

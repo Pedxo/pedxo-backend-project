@@ -20,9 +20,9 @@ export class OtpService {
   ) {}
 
   async createOtp(payload: CreateOtpDTO) {
-    const { email } = payload;
+    const { code } = payload;
     const otp = await this.otpModel.findOneAndUpdate(
-      { email: email },
+      { code: code },
       { ...payload },
       { new: true, upsert: true },
     );
@@ -30,16 +30,16 @@ export class OtpService {
   }
 
   async verifyOTP(payload: VerifyOTPDto): Promise<Boolean> {
-    const { code, email } = payload;
-    const otpExist = await this.validateOtp(email, code);
+    const { code } = payload;
+    const otpExist = await this.validateOtp(code);
 
     await this.otpModel.findByIdAndDelete(otpExist._id);
 
     return true;
   }
 
-  async validateOtp(email: string, code: string) {
-    const otp = await this.otpModel.findOne({ email, code });
+  async validateOtp(code: string) {
+    const otp = await this.otpModel.findOne({ code });
     if (!otp) {
       throw new UnauthorizedException(
         'Your code has either expire or is Invalid',
@@ -55,20 +55,20 @@ export class OtpService {
     let template;
     let subject;
 
-    const encodedEmail = encode(email);
+    //const encodedEmail = encode(email);
     const encodedCode = encode(code);
 
     if (type === OtpType.EMAIL_VERIFICATION) {
-      template = `Kindly verify your action user this link to activate your account https://pedxo-backend.onrender.com/auth/verify-email/?encodedEmail=${encodedEmail}&encodedCode=${encodedCode}`;
+      template = `Kindly verify your action user this link to activate your account https://pedxo-backend.onrender.com/auth/verify-email/?encodedCode=${encodedCode}`;
       subject = `Action Request`;
     }
 
     if (type === OtpType.RESET_PASSWORD) {
-      template = `Kindly verify your action using this link to reset your password https://pedxo-backend.onrender.com/auth/verify-reset-password-otp/?encodedEmail=${encodedEmail}&encodedCode=${encodedCode}`;
+      template = `Kindly verify your action using this link to reset your password https://pedxo-backend.onrender.com/auth/verify-reset-password-otp/?encodedCode=${encodedCode}`;
       subject = `Action Request`;
     }
 
-    const otp = await this.createOtp({ email, code });
+    const otp = await this.createOtp({ code });
     if (!otp) {
       throw new UnprocessableEntityException('error occur while sending otp');
     }
