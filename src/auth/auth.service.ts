@@ -78,9 +78,8 @@ export class AuthService {
   }
 
   async verifyEmail(payload: VerifyEmailDto) {
-    const { encodedEmail, encodedCode } = payload;
+    const { email, encodedCode } = payload;
 
-    const email = decode(encodedEmail);
     const code = decode(encodedCode);
 
     const user = await this.userService.getByEmail(email);
@@ -111,10 +110,7 @@ export class AuthService {
   async verifyPasswordOtp(payload: VerifyForgetPasswordDto) {
     const { encodedCode } = payload;
 
-    //const email = decode(encodedEmail);
     const code = decode(encodedCode);
-
-    // const user = await this.userService.getByEmail(email);
     const otp = await this.otpService.verifyOTP({ code });
 
     if (otp) {

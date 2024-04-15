@@ -4,7 +4,7 @@ import { OtpType } from 'src/otp/enum/opt.type.enum';
 export class VerifyEmailDto {
   @IsNotEmpty()
   @IsString()
-  encodedEmail: string;
+  email: string;
 
   @IsNotEmpty()
   @IsString()

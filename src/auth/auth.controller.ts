@@ -24,8 +24,8 @@ export class AuthController {
     return await this.authService.login(body);
   }
 
-  @Get('verify-email')
-  async verifyEmail(@Query() payload: VerifyEmailDto) {
+  @Post('verify-email')
+  async verifyEmail(@Body() payload: VerifyEmailDto) {
     return await this.authService.verifyEmail(payload);
   }
 
