@@ -34,8 +34,8 @@ export class AuthController {
     return await this.authService.forgotPassword(payload);
   }
 
-  @Get('verify-reset-password-otp')
-  async verifyPasswordOtp(@Query() payload: VerifyForgetPasswordDto) {
+  @Post('verify-reset-password-otp')
+  async verifyPasswordOtp(@Body() payload: VerifyForgetPasswordDto) {
     return await this.authService.verifyPasswordOtp(payload);
   }
 
