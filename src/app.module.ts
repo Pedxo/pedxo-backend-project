@@ -8,6 +8,7 @@ import { HireModule } from './hire/hire.module';
 import { AdminModule } from './admin/admin.module';
 import { MailModule } from './node-mailer/mailer.module';
 import { OtpModule } from './otp/otp.module';
+import { OutSourceModule } from './outsource/outsource.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { OtpModule } from './otp/otp.module';
     AdminModule,
     MailModule,
     OtpModule,
+    OutSourceModule,
   ],
   controllers: [],
   providers: [],

@@ -16,4 +16,8 @@ export const ENVIRONMENT = {
     PORT: process.env.PORT,
     SESSION_SECRET: process.env.SESSION_SECRET,
   },
+
+  OWNER: {
+    OWNER_EMAIL: process.env.OWNER_EMAIL
+  },
 };
