@@ -18,7 +18,6 @@ import {
   VerifyForgetPasswordDto,
 } from './dto/auth.dto';
 import { OtpType } from 'src/otp/enum/opt.type.enum';
-import { decode, encode } from 'base-64';
 
 @Injectable()
 export class AuthService {
@@ -78,9 +77,7 @@ export class AuthService {
   }
 
   async verifyEmail(payload: VerifyEmailDto) {
-    const { email, encodedCode } = payload;
-
-    const code = decode(encodedCode);
+    const { email, code } = payload;
 
     const user = await this.userService.getByEmail(email);
 
@@ -108,9 +105,8 @@ export class AuthService {
   }
 
   async verifyPasswordOtp(payload: VerifyForgetPasswordDto) {
-    const { encodedCode } = payload;
+    const { code } = payload;
 
-    const code = decode(encodedCode);
     const otp = await this.otpService.verifyOTP({ code });
 
     if (otp) {

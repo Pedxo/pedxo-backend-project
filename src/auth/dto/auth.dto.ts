@@ -8,7 +8,7 @@ export class VerifyEmailDto {
 
   @IsNotEmpty()
   @IsString()
-  encodedCode: string;
+  code: string;
 }
 
 export class ForgetPasswordDto {
@@ -34,7 +34,7 @@ export class VerifyForgetPasswordDto {
 
   @IsNotEmpty()
   @IsString()
-  encodedCode: string;
+  code: string;
 }
 
 export class RequestOtpDto {
