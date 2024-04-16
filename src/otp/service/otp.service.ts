@@ -65,7 +65,7 @@ export class OtpService {
     }
 
     if (type === OtpType.RESET_PASSWORD) {
-      template = `Kindly verify your action using this link to reset your password https://pedxo.netlify.app/verify-request-reset-pwd/ver-doc?code=${code}`;
+      template = `Kindly verify your action using this link to reset your password https://pedxo.netlify.app/verify-request-reset-pwd/ver-doc/?code=${code}`;
       subject = `Action Request`;
     }
 
