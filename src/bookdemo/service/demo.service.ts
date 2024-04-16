@@ -35,7 +35,6 @@ export class BookDemoService {
         ResponseMessage.demoSubject,
         ResponseMessage.toOwnerDemoTemplate(full_Name, pick_date),
       );
-      return;
     }
 
     return `Demo Booked Successfully`;

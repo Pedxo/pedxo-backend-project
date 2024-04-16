@@ -1,8 +1,10 @@
 import {
   IsArray,
   IsDate,
+  IsDateString,
   IsEmail,
   IsEnum,
+  IsISO8601,
   IsNotEmpty,
   IsOptional,
   IsPhoneNumber,
@@ -43,6 +45,6 @@ export class BookDemoDto {
   knowUs?: KnowUsENum;
 
   @IsNotEmpty()
-  @IsDate()
+  @IsISO8601()
   pick_date: string;
 }
