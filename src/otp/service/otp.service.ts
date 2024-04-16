@@ -22,7 +22,6 @@ export class OtpService {
   async createOtp(payload: CreateOtpDTO) {
     const { email, type } = payload;
 
-
     const otpExist = await this.otpModel.findOne({ email, type });
 
     if (otpExist) {
@@ -75,7 +74,7 @@ export class OtpService {
     if (!otp) {
       throw new InternalServerErrorException('error occur while sending otp');
     }
-    //await this.mailService.sendMessage(email, subject, template);
+    await this.mailService.sendMessage(email, subject, template);
 
     return true;
   }
