@@ -3,15 +3,29 @@ import { OtpType } from '../enum/opt.type.enum';
 
 export class CreateOtpDTO {
   @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
   @IsString()
   code: string;
-
-  // @IsNotEmpty()
-  // @IsEmail()
-  // email: string;
 }
 
-export class VerifyOTPDto extends CreateOtpDTO {}
+// export class VerifyOTPDto {
+//   @IsNotEmpty()
+//   @IsEmail()
+//   email: string;
+
+//   @IsNotEmpty()
+//   @IsString()
+//   code: string;
+// }
+
+export class VerifyOTPDto {
+  @IsNotEmpty()
+  @IsString()
+  code: string;
+}
 
 export class SentOtpDto {
   @IsEmail()

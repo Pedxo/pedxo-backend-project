@@ -27,11 +27,17 @@ export class ResetPasswordDto {
   email: string;
 }
 
-export class VerifyForgetPasswordDto {
-  // @IsNotEmpty()
-  // @IsString()
-  // encodedEmail: string;
+// export class VerifyForgetPasswordDto {
+//   @IsNotEmpty()
+//   @IsString()
+//   email: string;
 
+//   @IsNotEmpty()
+//   @IsString()
+//   code: string;
+// }
+
+export class VerifyForgetPasswordDto {
   @IsNotEmpty()
   @IsString()
   code: string;

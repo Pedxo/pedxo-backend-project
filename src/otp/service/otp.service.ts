@@ -19,9 +19,9 @@ export class OtpService {
   ) {}
 
   async createOtp(payload: CreateOtpDTO) {
-    const { code } = payload;
+    const { email, code } = payload;
     const otp = await this.otpModel.findOneAndUpdate(
-      { code: code },
+      { code: code, email: email },
       { ...payload },
       { new: true, upsert: true },
     );
@@ -64,7 +64,7 @@ export class OtpService {
       subject = `Action Request`;
     }
 
-    const otp = await this.createOtp({ code });
+    const otp = await this.createOtp({ email, code });
     if (!otp) {
       throw new UnprocessableEntityException('error occur while sending otp');
     }
