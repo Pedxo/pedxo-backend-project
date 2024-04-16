@@ -1,5 +1,6 @@
 import {
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -19,12 +20,17 @@ export class OtpService {
   ) {}
 
   async createOtp(payload: CreateOtpDTO) {
-    const { email, code } = payload;
-    const otp = await this.otpModel.findOneAndUpdate(
-      { code: code, email: email },
-      { ...payload },
-      { new: true, upsert: true },
-    );
+    const { email, type } = payload;
+
+
+    const otpExist = await this.otpModel.findOne({ email, type });
+
+    if (otpExist) {
+      throw new UnprocessableEntityException(
+        'Check you email or retry again after 1 minute',
+      );
+    }
+    const otp = await this.otpModel.create({ ...payload });
     return otp;
   }
 
@@ -64,12 +70,12 @@ export class OtpService {
       subject = `Action Request`;
     }
 
-    const otp = await this.createOtp({ email, code });
-    if (!otp) {
-      throw new UnprocessableEntityException('error occur while sending otp');
-    }
+    const otp = await this.createOtp({ email, code, type });
 
-    await this.mailService.sendMessage(email, subject, template);
+    if (!otp) {
+      throw new InternalServerErrorException('error occur while sending otp');
+    }
+    //await this.mailService.sendMessage(email, subject, template);
 
     return true;
   }

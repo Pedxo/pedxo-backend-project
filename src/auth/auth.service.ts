@@ -133,6 +133,7 @@ export class AuthService {
     const { email, type } = payload;
 
     const user = await this.userService.getByEmail(email);
+
     const otp = await this.otpService.sendOtp({
       email: user.email,
       type: type,

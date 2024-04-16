@@ -6,6 +6,10 @@ export class CreateOtpDTO {
   @IsEmail()
   email: string;
 
+  @IsEnum(OtpType)
+  @IsNotEmpty()
+  type: string;
+  
   @IsNotEmpty()
   @IsString()
   code: string;

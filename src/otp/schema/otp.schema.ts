@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { OtpType } from '../enum/opt.type.enum';
 
 export type OtpDocument = OTP & Document;
-@Schema({ expires: 100 })
+@Schema({ expires: 60 })
 export class OTP {
   @Prop({ type: String, required: true, unique: true })
   email: string;
@@ -10,10 +11,13 @@ export class OTP {
   @Prop({ type: String, required: true })
   code: string;
 
+  @Prop({ required: true, enum: OtpType })
+  type: string;
+
   @Prop({ default: new Date() })
   createdAt: Date;
 
-  @Prop({ default: Date.now(), expires: 100 })
+  @Prop({ default: Date.now(), expires: 60 })
   expiresAt: Date;
 }
 
