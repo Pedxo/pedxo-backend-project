@@ -64,10 +64,11 @@ export class OtpService {
     }
 
     if (type === OtpType.RESET_PASSWORD) {
-      template = `Kindly verify your action using this link to reset your password https://pedxo.netlify.app/resetver/?encodedCode=${encodedCode}`;
+      template = `Kindly verify your action using this link to reset your password https://pedxo.netlify.app/resetver/verify-request-reset-pwd/erv-doc?encodedCode=${encodedCode}`;
       subject = `Action Request`;
     }
 
+    //https://pedxo.netlify.app/resetver/verify-request-reset-pwd/erv-doc
     const otp = await this.createOtp({ code });
     if (!otp) {
       throw new UnprocessableEntityException('error occur while sending otp');
