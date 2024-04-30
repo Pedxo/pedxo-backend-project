@@ -24,20 +24,20 @@ export class OutSourceService {
 
     const ownerEmail = ENVIRONMENT.OWNER.OWNER_EMAIL;
 
-    const sendProjectOwnerEmail = await this.emailService.sendMessage(
-      outsource.email,
-      ResponseMessage.subject,
-      ResponseMessage.ResponseSender,
-    );
+    // const sendProjectOwnerEmail = await this.emailService.sendMessage(
+    //   outsource.email,
+    //   ResponseMessage.subject,
+    //   ResponseMessage.ResponseSender,
+    // );
 
-    if (sendProjectOwnerEmail) {
-      await this.emailService.sendMessage(
-        ownerEmail,
-        ResponseMessage.subject,
-        ResponseMessage.toOwnerTemplate(full_Name),
-      );
-      return;
-    }
+    // if (sendProjectOwnerEmail) {
+    //   await this.emailService.sendMessage(
+    //     ownerEmail,
+    //     ResponseMessage.subject,
+    //     ResponseMessage.toOwnerTemplate(full_Name),
+    //   );
+    //   return;
+    // }
 
     return 'out source success';
   }

@@ -25,7 +25,7 @@ export class OutSource {
   employeeCount?: EmployeesCountDownEnum;
 
   @Prop({ type: [String], enum: NeededTeamEnum, default: [] })
-  needed_team?: NeededTeamEnum;
+  needed_team?: NeededTeamEnum[];
 
   @Prop({ type: String, enum: KnowUsENum })
   knowUs?: KnowUsENum;

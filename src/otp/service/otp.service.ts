@@ -8,9 +8,9 @@ import { CreateOtpDTO, SentOtpDto, VerifyOTPDto } from '../dto/otp.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { OTP, OtpDocument } from '../schema/otp.schema';
 import { Model } from 'mongoose';
-import { token } from 'src/common/constant/generate.string';
 import { EmailService } from 'src/node-mailer/service/email.service';
 import { OtpType } from '../enum/opt.type.enum';
+import { generateOtpCode } from 'src/common/constant/generate.string';
 
 @Injectable()
 export class OtpService {
@@ -20,17 +20,18 @@ export class OtpService {
   ) {}
 
   async createOtp(payload: CreateOtpDTO) {
-    const { email, type } = payload;
+    const { email } = payload;
 
-    const otpExist = await this.otpModel.findOne({ email, type });
+    const otpExist = await this.otpModel.findOne({ email });
 
     if (otpExist) {
-      throw new UnprocessableEntityException(
-        'Check you email or retry again after 1 minute',
-      );
+      return await this.otpModel.findOneAndUpdate({ email }, payload, {
+        new: true,
+        upsert: true,
+        runValidators: true,
+      });
     }
-    const otp = await this.otpModel.create({ ...payload });
-    return otp;
+    return await this.otpModel.create({ ...payload });
   }
 
   async verifyOTP(payload: VerifyOTPDto): Promise<Boolean> {
@@ -54,13 +55,13 @@ export class OtpService {
   async sendOtp(payload: SentOtpDto) {
     const { email, type } = payload;
     //generate the code
-    const code = token;
+    const code = generateOtpCode.generateString(20);
 
     let template;
     let subject;
 
     if (type === OtpType.EMAIL_VERIFICATION) {
-      template = `Kindly verify your action user this link to activate your account https://pedxo-backend.onrender.com/auth/verify-email/?code=${code}`;
+      template = `Kindly verify your action user this link to activate your account https://pedxo.netlify.app/verifying-user-email/?code=${code}`;
       subject = `Action Request`;
     }
 
