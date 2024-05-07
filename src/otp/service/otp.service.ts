@@ -10,7 +10,7 @@ import { OTP, OtpDocument } from '../schema/otp.schema';
 import { Model } from 'mongoose';
 import { EmailService } from 'src/node-mailer/service/email.service';
 import { OtpType } from '../enum/opt.type.enum';
-import { generateOtpCode } from 'src/common/constant/generate.string';
+import { token } from 'src/common/constant/generate.string';
 
 @Injectable()
 export class OtpService {
@@ -55,7 +55,7 @@ export class OtpService {
   async sendOtp(payload: SentOtpDto) {
     const { email, type } = payload;
     //generate the code
-    const code = generateOtpCode.generateString(20);
+    const code = token;
 
     let template;
     let subject;

@@ -19,25 +19,22 @@ export class OutSourceService {
     const outsource = await this.outSourceModel.create({ ...payload });
 
     if (!outsource) {
-      throw new InternalServerErrorException(`Can't proceed, try again`);
+      throw new InternalServerErrorException(`Server error, try again`);
     }
 
     const ownerEmail = ENVIRONMENT.OWNER.OWNER_EMAIL;
 
-    // const sendProjectOwnerEmail = await this.emailService.sendMessage(
-    //   outsource.email,
-    //   ResponseMessage.subject,
-    //   ResponseMessage.ResponseSender,
-    // );
+    await this.emailService.sendMessage(
+      outsource.email,
+      ResponseMessage.subject,
+      ResponseMessage.ResponseSender,
+    );
 
-    // if (sendProjectOwnerEmail) {
-    //   await this.emailService.sendMessage(
-    //     ownerEmail,
-    //     ResponseMessage.subject,
-    //     ResponseMessage.toOwnerTemplate(full_Name),
-    //   );
-    //   return;
-    // }
+    await this.emailService.sendMessage(
+      ownerEmail,
+      ResponseMessage.subject,
+      ResponseMessage.toOwnerTemplate(full_Name),
+    );
 
     return 'out source success';
   }
