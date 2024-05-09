@@ -2,7 +2,7 @@ export enum EmployeesCountDownEnum {
   '1_3' = '1-30',
   '31_100' = '31-100',
   '101_400' = '101-400',
-  '400_Above' = '400-1000+',
+  '400_Above' = '401-1000+',
 }
 
 export enum KnowUsENum {
