@@ -5,17 +5,17 @@ export enum EmployeesCountDownEnum {
   '400_Above' = '401-1000+',
 }
 
-export enum KnowUsENum {
-  'BLOG' = 'Blog',
-  'FACEBOOK' = 'Facebook',
-  'GOOGLE' = 'Google',
-  'INSTAGRAM' = 'Instagram',
-  'REFERRAL' = 'Referral',
-  'TWITTER' = 'Twitter',
-  'WEBINAR' = 'Webinar',
-  'LINKEDIN' = 'Linkedin',
-  'OTHERS' = 'Others',
-}
+// export enum KnowUsEnum {
+//   'BLOG' = 'Blog',
+//   'FACEBOOK' = 'Facebook',
+//   'GOOGLE' = 'Google',
+//   'INSTAGRAM' = 'Instagram',
+//   'REFERRAL' = 'Referral',
+//   'TWITTER' = 'Twitter',
+//   'WEBINAR' = 'Webinar',
+//   'LINKEDIN' = 'Linkedin',
+//   'OTHERS' = 'Others',
+// }
 
 export enum NeededTeamEnum {
   'UI_UX' = 'UI/UX',

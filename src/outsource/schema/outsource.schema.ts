@@ -1,10 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import {
-  EmployeesCountDownEnum,
-  KnowUsENum,
-  NeededTeamEnum,
-} from '../enum/outsource.enum';
+import { EmployeesCountDownEnum, NeededTeamEnum } from '../enum/outsource.enum';
 
 export type OutSourceDocument = OutSource & Document;
 @Schema({ timestamps: true })
@@ -27,8 +23,8 @@ export class OutSource {
   @Prop({ type: [String], enum: NeededTeamEnum, default: [] })
   needed_team?: NeededTeamEnum[];
 
-  @Prop({ type: String, enum: KnowUsENum })
-  knowUs?: KnowUsENum;
+  @Prop({ type: String })
+  knowUs?: string;
 
   @Prop({ type: String })
   project_description: string;

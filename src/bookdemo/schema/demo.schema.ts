@@ -1,9 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import {
-  EmployeesCountDownEnum,
-  KnowUsENum,
-} from 'src/outsource/enum/outsource.enum';
+import { EmployeesCountDownEnum } from 'src/outsource/enum/outsource.enum';
 
 export type BookDemoDocument = BookDemo & Document;
 @Schema({ timestamps: true })
@@ -26,8 +23,8 @@ export class BookDemo {
   @Prop({ type: String, enum: EmployeesCountDownEnum })
   employeeCount?: EmployeesCountDownEnum;
 
-  @Prop({ type: String, enum: KnowUsENum })
-  knowUs?: KnowUsENum;
+  @Prop({ type: String })
+  knowUs?: string;
 
   @Prop({ type: Date })
   pick_date: Date;

@@ -10,10 +10,7 @@ import {
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
-import {
-  EmployeesCountDownEnum,
-  KnowUsENum,
-} from 'src/outsource/enum/outsource.enum';
+import { EmployeesCountDownEnum } from 'src/outsource/enum/outsource.enum';
 
 export class BookDemoDto {
   @IsNotEmpty()
@@ -41,8 +38,8 @@ export class BookDemoDto {
   employeeCount?: EmployeesCountDownEnum;
 
   @IsOptional()
-  @IsEnum(KnowUsENum)
-  knowUs?: KnowUsENum;
+  @IsString()
+  knowUs?: string;
 
   @IsNotEmpty()
   @IsISO8601()
