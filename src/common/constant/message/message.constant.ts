@@ -1,7 +1,9 @@
+import { NeededTeamEnum } from 'src/outsource/enum/outsource.enum';
+
 export const ResponseMessage = {
   toOwnerOutSourceTemplate: async (
     name: string,
-    team: any,
+    team: NeededTeamEnum,
     projectName: string,
     email: string,
     phoneNumber: string,
@@ -24,7 +26,7 @@ export const ResponseMessage = {
   outSourceSubject: `Project OutSource`,
 
   responseToOutSource: async () => {
-    return `project received successfully one of us will reach out to you soon `;
+    return `project received successfully one of us will reach out to you soon. Thank you. Pedxo Team `;
   },
 
   toOwnerDemoTemplate: (name: string, date: string, companyName: string) => {
@@ -53,12 +55,23 @@ export const ResponseMessage = {
 
   demoSubject: `Demo booked`,
 
-  responseToBooker: async (data: string) => {
+  responseToBooker: async (date_time: string) => {
+    const formattedDate = new Date(date_time).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    const formattedTime = new Date(date_time).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
     return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <p style="font-size: 16px; line-height: 1.5; color: #333;">Your meeting has been confirmed for ${data} with Pedxo.</p>
+      <p style="font-size: 16px; line-height: 1.5; color: #333;">Your meeting has been confirmed for ${formattedDate} at ${formattedTime} with Pedxo.</p>
       <p style="font-size: 16px; line-height: 1.5; color: #333;">Make sure to update your calendar to be available for the meeting.</p>
-      <p style="font-size: 16px; line-height: 1.5; color: #333;">Please note that 30 minutes before the scheduled time, our team will contact you to remind you.</p>
+      <p style="font-size: 16px; line-height: 1.5; color: #333;">Please note that 30 minutes before the scheduled time, our team will contact you to remind you. Thanks again! Pedxo Team</p>
     </div>
   `;
   },
