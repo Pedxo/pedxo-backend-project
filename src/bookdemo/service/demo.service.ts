@@ -15,7 +15,7 @@ export class BookDemoService {
   ) {}
 
   async bookdemo(payload: BookDemoDto) {
-    const { full_Name, pick_date } = payload;
+    const { full_Name, pick_date, company_name } = payload;
     const demo = await this.demoModel.create({ ...payload });
     if (!demo) {
       throw new InternalServerErrorException('Error Server');
@@ -26,14 +26,14 @@ export class BookDemoService {
     const demoBooker = await this.emailService.sendMessage(
       demo.email,
       ResponseMessage.demoSubject,
-      ResponseMessage.ResponseDemoSender,
+      await ResponseMessage.responseToBooker(pick_date),
     );
 
     if (demoBooker) {
       await this.emailService.sendMessage(
         ownerEmail,
         ResponseMessage.demoSubject,
-        ResponseMessage.toOwnerDemoTemplate(full_Name, pick_date),
+        ResponseMessage.toOwnerDemoTemplate(full_Name, pick_date, company_name),
       );
     }
 

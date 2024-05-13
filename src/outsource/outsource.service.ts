@@ -15,7 +15,14 @@ export class OutSourceService {
     private emailService: EmailService,
   ) {}
   async create(payload: OutSourceDto) {
-    const { full_Name } = payload;
+    const {
+      full_Name,
+      job_title,
+      phoneNumber,
+      email,
+      needed_team,
+      project_description,
+    } = payload;
     const outsource = await this.outSourceModel.create({ ...payload });
 
     if (!outsource) {
@@ -25,15 +32,22 @@ export class OutSourceService {
     const ownerEmail = ENVIRONMENT.OWNER.OWNER_EMAIL;
 
     await this.emailService.sendMessage(
-      outsource.email,
-      ResponseMessage.subject,
-      ResponseMessage.ResponseSender,
+      email,
+      ResponseMessage.outSourceSubject,
+      await ResponseMessage.responseToOutSource(),
     );
 
     await this.emailService.sendMessage(
       ownerEmail,
-      ResponseMessage.subject,
-      ResponseMessage.toOwnerTemplate(full_Name),
+      ResponseMessage.outSourceSubject,
+      await ResponseMessage.toOwnerOutSourceTemplate(
+        full_Name,
+        needed_team,
+        job_title,
+        email,
+        phoneNumber,
+        project_description,
+      ),
     );
 
     return 'out source success';

@@ -11,6 +11,8 @@ import { Model } from 'mongoose';
 import { EmailService } from 'src/node-mailer/service/email.service';
 import { OtpType } from '../enum/opt.type.enum';
 import { token } from 'src/common/constant/generate.string';
+import { welcomeMessage } from 'src/common/constant/message/welcome.message';
+import { resetPasswordMessage } from 'src/common/constant/message/reset-password.message';
 
 @Injectable()
 export class OtpService {
@@ -53,7 +55,7 @@ export class OtpService {
     return otp;
   }
   async sendOtp(payload: SentOtpDto) {
-    const { email, type } = payload;
+    const { email, type, userName } = payload;
     //generate the code
     const code = token;
 
@@ -61,12 +63,12 @@ export class OtpService {
     let subject;
 
     if (type === OtpType.EMAIL_VERIFICATION) {
-      template = `Kindly verify your action user this link to activate your account https://pedxo.netlify.app/verifying-user-email/?code=${code}`;
+      template = await welcomeMessage(userName, code);
       subject = `Action Request`;
     }
 
     if (type === OtpType.RESET_PASSWORD) {
-      template = `Kindly verify your action using this link to reset your password https://pedxo.netlify.app/verify-request-reset-pwd/ver-doc/?code=${code}`;
+      template = await resetPasswordMessage(userName, code);
       subject = `Action Request`;
     }
 

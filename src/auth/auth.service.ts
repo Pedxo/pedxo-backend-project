@@ -98,10 +98,11 @@ export class AuthService {
 
   async forgotPassword(payload: ForgetPasswordDto) {
     const { email } = payload;
-    await this.userService.getByEmail(email);
+    const user = await this.userService.getByEmail(email);
     await this.otpService.sendOtp({
       email: email,
       type: OtpType.RESET_PASSWORD,
+      userName: user.userName,
     });
     return `Otp send, kindly check your email`;
   }
@@ -137,6 +138,7 @@ export class AuthService {
     const otp = await this.otpService.sendOtp({
       email: user.email,
       type: type,
+      userName: user.userName,
     });
     return otp;
   }
