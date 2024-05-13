@@ -14,7 +14,7 @@ import { ENVIRONMENT } from 'src/common/constant/enivronment/enviroment';
       },
 
       defaults: {
-        from: '"No Reply" <noreply@pedxo.com>',
+        from: '"Pedxo Support" <support@pedxo>',
       },
     }),
   ],

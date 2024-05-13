@@ -9,7 +9,7 @@ export class CreateOtpDTO {
   @IsEnum(OtpType)
   @IsNotEmpty()
   type: string;
-  
+
   @IsNotEmpty()
   @IsString()
   code: string;
@@ -39,4 +39,8 @@ export class SentOtpDto {
   @IsEnum(OtpType)
   @IsNotEmpty()
   type: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  userName: string;
 }
