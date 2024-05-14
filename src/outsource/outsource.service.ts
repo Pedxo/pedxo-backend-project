@@ -22,6 +22,8 @@ export class OutSourceService {
       email,
       needed_team,
       project_description,
+      employeeCount,
+      knowUs,
     } = payload;
     const outsource = await this.outSourceModel.create({ ...payload });
 
@@ -47,6 +49,8 @@ export class OutSourceService {
         email,
         phoneNumber,
         project_description,
+        employeeCount,
+        knowUs,
       ),
     );
 
