@@ -26,10 +26,20 @@ export class CreateOtpDTO {
 // }
 
 export class VerifyOTPDto {
+  // @IsEmail()
+  // @IsNotEmpty()
+  // email: string;
+
   @IsNotEmpty()
   @IsString()
   code: string;
+
+  @IsEnum(OtpType)
+  @IsNotEmpty()
+  type: OtpType;
 }
+
+export class ValidateOtpDto extends VerifyOTPDto {}
 
 export class SentOtpDto {
   @IsEmail()
@@ -38,7 +48,7 @@ export class SentOtpDto {
 
   @IsEnum(OtpType)
   @IsNotEmpty()
-  type: string;
+  type: OtpType;
 
   @IsEmail()
   @IsNotEmpty()

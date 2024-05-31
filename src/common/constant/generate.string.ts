@@ -1,6 +1,15 @@
-import * as randomString from 'randomstring';
+export const generateOTPString = (): string => {
+  // Define the length of the OTP
+  const otpLength = 30;
+  const characters =
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-export const token = randomString.generate({
-  length: 30,
-  charset: 'alphanumeric',
-});
+  // Generate a random OTP string of the specified length
+  let otp = '';
+  for (let i = 0; i < otpLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    otp += characters[randomIndex];
+  }
+
+  return otp;
+};

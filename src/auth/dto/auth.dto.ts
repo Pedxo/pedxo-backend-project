@@ -50,5 +50,5 @@ export class RequestOtpDto {
 
   @IsNotEmpty()
   @IsEnum(OtpType)
-  type: string;
+  type: OtpType;
 }

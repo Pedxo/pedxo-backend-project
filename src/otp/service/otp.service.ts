@@ -2,15 +2,19 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
-import { CreateOtpDTO, SentOtpDto, VerifyOTPDto } from '../dto/otp.dto';
+import {
+  CreateOtpDTO,
+  SentOtpDto,
+  ValidateOtpDto,
+  VerifyOTPDto,
+} from '../dto/otp.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { OTP, OtpDocument } from '../schema/otp.schema';
 import { Model } from 'mongoose';
 import { EmailService } from 'src/node-mailer/service/email.service';
 import { OtpType } from '../enum/opt.type.enum';
-import { token } from 'src/common/constant/generate.string';
+import { generateOTPString } from 'src/common/constant/generate.string';
 import { welcomeMessage } from 'src/common/constant/message/welcome.message';
 import { resetPasswordMessage } from 'src/common/constant/message/reset-password.message';
 
@@ -22,31 +26,37 @@ export class OtpService {
   ) {}
 
   async createOtp(payload: CreateOtpDTO) {
-    const { email } = payload;
+    const { email, type } = payload;
 
-    const otpExist = await this.otpModel.findOne({ email });
+    const otpExist = await this.otpModel.findOne({ email, type });
 
-    if (otpExist) {
-      return await this.otpModel.findOneAndUpdate({ email }, payload, {
+    if (!otpExist) {
+      return await this.otpModel.create({ ...payload });
+    }
+
+    return await this.otpModel.findByIdAndUpdate(
+      { _id: otpExist._id },
+      payload,
+      {
         new: true,
         upsert: true,
         runValidators: true,
-      });
-    }
-    return await this.otpModel.create({ ...payload });
+      },
+    );
   }
 
   async verifyOTP(payload: VerifyOTPDto): Promise<Boolean> {
-    const { code } = payload;
-    const otpExist = await this.validateOtp(code);
+    const { code, type } = payload;
+    const otpExist = await this.validateOtp({ code, type });
 
     await this.otpModel.findByIdAndDelete(otpExist._id);
 
     return true;
   }
 
-  async validateOtp(code: string) {
-    const otp = await this.otpModel.findOne({ code });
+  async validateOtp(payload: ValidateOtpDto) {
+    const { code, type } = payload;
+    const otp = await this.otpModel.findOne({ code, type });
     if (!otp) {
       throw new UnauthorizedException(
         'Your code has either expire or is Invalid',
@@ -56,8 +66,8 @@ export class OtpService {
   }
   async sendOtp(payload: SentOtpDto) {
     const { email, type, userName } = payload;
-    //generate the code
-    const code = token;
+
+    const code = generateOTPString();
 
     let template;
     let subject;

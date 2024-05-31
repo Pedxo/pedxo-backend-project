@@ -81,9 +81,11 @@ export class AuthService {
 
     const user = await this.userService.getByEmail(email);
 
-    // await this.otpService.verifyOTP({email, code });
-
-    await this.otpService.verifyOTP({ code });
+    await this.otpService.verifyOTP({
+      // email: email,
+      code: code,
+      type: OtpType.EMAIL_VERIFICATION,
+    });
 
     if (user.isEmailVerified) {
       throw new BadRequestException('Your account is verify already');
@@ -111,7 +113,10 @@ export class AuthService {
     // const { email, code } = payload;
     const { code } = payload;
 
-    const otp = await this.otpService.verifyOTP({ code });
+    const otp = await this.otpService.verifyOTP({
+      code: code,
+      type: OtpType.RESET_PASSWORD,
+    });
 
     if (otp) {
       return 'success';
