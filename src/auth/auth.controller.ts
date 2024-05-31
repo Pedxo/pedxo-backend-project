@@ -9,6 +9,8 @@ import {
   VerifyEmailDto,
   VerifyForgetPasswordDto,
 } from './dto/auth.dto';
+import { Serialize } from 'src/common/interceptor/custom.interceptor';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,6 +21,7 @@ export class AuthController {
     return await this.authService.create(body);
   }
 
+  @Serialize(UserDto)
   @Post('login')
   async login(@Body() body: LoginUserDTO) {
     return await this.authService.login(body);

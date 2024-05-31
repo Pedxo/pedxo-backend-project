@@ -55,9 +55,10 @@ export class AuthService {
   }
 
   //Log in endpoint
+
   async login(body: LoginUserDTO) {
     const { email, password } = body;
-    const user = await this.userService.getByEmailOrUserName(email);
+    const user = await this.userService.getByEmail(email);
     if (!user) {
       throw new NotFoundException('user not found');
     }
@@ -73,7 +74,10 @@ export class AuthService {
       email: user.email,
     };
     const token = await this.jwt.signAsync(payload);
-    return token;
+
+    user.accessToken = token;
+    await user.save();
+    return user;
   }
 
   async verifyEmail(payload: VerifyEmailDto) {

@@ -14,21 +14,26 @@ import { User } from './schema/user.schema';
 import { AuthGuard } from 'src/auth/customGuard/guard.custom';
 import { CurrentUser } from 'src/common/decorator/current.logged.user';
 import { Update } from './dto/update.user.dto';
+import { Serialize } from 'src/common/interceptor/custom.interceptor';
+import { AllUserDto, UserDto } from './dto/user.dto';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   // @UseGuards(AuthGuard)
+  @Serialize(AllUserDto)
   @Get()
   async getAll(): Promise<User[]> {
     return await this.userService.getAll();
   }
 
+  @Serialize(UserDto)
   @UseGuards(AuthGuard)
   @Get('/profile')
   async dashboard(@CurrentUser() user: User) {
-    return user;
+    const currentUser = await this.userService.getById(user._id);
+    return currentUser;
   }
 
   @Get('findOne/:id')
