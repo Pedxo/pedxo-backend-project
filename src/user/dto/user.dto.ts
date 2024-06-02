@@ -2,6 +2,9 @@ import { Expose } from 'class-transformer';
 
 export class UserDto {
   @Expose()
+  _id: string;
+
+  @Expose()
   email: string;
 
   @Expose()
@@ -24,6 +27,9 @@ export class UserDto {
 }
 
 export class AllUserDto {
+  @Expose()
+  _id: string;
+
   @Expose()
   firstName: string;
 
