@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -11,6 +12,7 @@ import { LoginUserDTO } from '../user/dto/login.user.dto';
 import { UserService } from 'src/user/user.service';
 import { OtpService } from '../otp/service/otp.service';
 import {
+  AccessTokenDto,
   ForgetPasswordDto,
   RequestOtpDto,
   ResetPasswordDto,
@@ -18,6 +20,7 @@ import {
   VerifyForgetPasswordDto,
 } from './dto/auth.dto';
 import { OtpType } from 'src/otp/enum/opt.type.enum';
+import { ENVIRONMENT } from 'src/common/constant/enivronment/enviroment';
 
 @Injectable()
 export class AuthService {
@@ -67,17 +70,14 @@ export class AuthService {
       throw new BadRequestException('password do not matched');
     }
 
-    const payload = {
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    };
-    const token = await this.jwt.signAsync(payload);
+    const token = await this.token(user);
 
-    user.accessToken = token;
-    await user.save();
-    return user;
+    const accessToken = token.accessToken;
+
+    return {
+      user,
+      accessToken,
+    };
   }
 
   async verifyEmail(payload: VerifyEmailDto) {
@@ -150,5 +150,56 @@ export class AuthService {
       userName: user.userName,
     });
     return otp;
+  }
+  async token(payload: any) {
+    payload = {
+      _id: payload._id,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+    };
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwt.signAsync(payload, {
+        secret: ENVIRONMENT.JWT.JWT_SECRET,
+        expiresIn: ENVIRONMENT.JWT.EXPIRATION_TIME,
+      }),
+      this.jwt.signAsync(payload, {
+        secret: ENVIRONMENT.JWT.JWT_REFRESH_SECRET,
+        expiresIn: ENVIRONMENT.JWT.JWT_REFRESH_EXP_TIME,
+      }),
+    ]);
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refreshToken(payload: AccessTokenDto) {
+    const { accessToken } = payload;
+    try {
+      const decoded = await this.jwt.verifyAsync(accessToken, {
+        secret: ENVIRONMENT.JWT.JWT_SECRET,
+      });
+
+      const user = await this.userService.getById(decoded._id);
+
+      if (!user || !user.refreshToken) {
+        throw new BadRequestException('Invalid request');
+      }
+
+      const decodeRefreshToken = await this.jwt.verifyAsync(user.refreshToken, {
+        secret: ENVIRONMENT.JWT.JWT_REFRESH_SECRET,
+      });
+
+      if (decodeRefreshToken._id !== decoded._id) {
+        throw new ForbiddenException();
+      }
+
+      const token = await this.token(user);
+      return token.accessToken;
+    } catch (e) {
+      throw new Error('Invalid refresh token');
+    }
   }
 }

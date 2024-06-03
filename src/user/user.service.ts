@@ -7,12 +7,15 @@ import { HashData } from 'src/common/hashed/hashed.data';
 import { Update } from './dto/update.user.dto';
 import { OtpService } from 'src/otp/service/otp.service';
 import { OtpType } from 'src/otp/enum/opt.type.enum';
+import { ENVIRONMENT } from 'src/common/constant/enivronment/enviroment';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private otpService: OtpService,
+    private jwt: JwtService,
   ) {}
 
   async create(payload: CreateUserDTO) {
@@ -24,6 +27,12 @@ export class UserService {
       ...payload,
       password: hashPassword,
     });
+
+    const refreshToken = await this.token(result);
+
+    result.refreshToken = refreshToken.refreshToken;
+
+    await result.save();
 
     await this.otpService.sendOtp({
       email: result.email,
@@ -111,5 +120,29 @@ export class UserService {
       );
     }
     return 'deleted';
+  }
+
+  async token(payload: any) {
+    payload = {
+      _id: payload._id,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+    };
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwt.signAsync(payload, {
+        secret: ENVIRONMENT.JWT.JWT_SECRET,
+        expiresIn: ENVIRONMENT.JWT.EXPIRATION_TIME,
+      }),
+      this.jwt.signAsync(payload, {
+        secret: ENVIRONMENT.JWT.JWT_REFRESH_SECRET,
+        expiresIn: ENVIRONMENT.JWT.JWT_REFRESH_EXP_TIME,
+      }),
+    ]);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }

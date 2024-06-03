@@ -18,6 +18,13 @@ export const ENVIRONMENT = {
   },
 
   OWNER: {
-    OWNER_EMAIL: process.env.OWNER_EMAIL
+    OWNER_EMAIL: process.env.OWNER_EMAIL,
+  },
+
+  JWT: {
+    JWT_SECRET: process.env.JWT_SECRET,
+    EXPIRATION_TIME: process.env.EXPIRATION_TIME,
+    JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+    JWT_REFRESH_EXP_TIME: process.env.JWT_REFRESH_EXP_TIME,
   },
 };

@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './customGuard/guard.custom';
 import { UserModule } from 'src/user/user.module';
 import { OtpModule } from 'src/otp/otp.module';
+import { RefreshTokenStrategy } from './strategy/refresh-token.strategy';
 
 //module decorator
 @Module({
@@ -25,6 +26,6 @@ import { OtpModule } from 'src/otp/otp.module';
     OtpModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard],
+  providers: [AuthService, AuthGuard, RefreshTokenStrategy],
 })
 export class AuthModule {}

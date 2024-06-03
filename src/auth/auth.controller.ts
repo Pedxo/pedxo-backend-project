@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDTO } from '../user/dto/create.user.dto';
 import { LoginUserDTO } from '../user/dto/login.user.dto';
 import {
+  AccessTokenDto,
   ForgetPasswordDto,
   RequestOtpDto,
   ResetPasswordDto,
@@ -10,7 +11,7 @@ import {
   VerifyForgetPasswordDto,
 } from './dto/auth.dto';
 import { Serialize } from 'src/common/interceptor/custom.interceptor';
-import { UserDto } from 'src/user/dto/user.dto';
+import { LoginResponse, UserDto } from 'src/user/dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +22,8 @@ export class AuthController {
     return await this.authService.create(body);
   }
 
-  @Serialize(UserDto)
+  // @Serialize(UserDto)
+  @Serialize(LoginResponse)
   @Post('login')
   async login(@Body() body: LoginUserDTO) {
     return await this.authService.login(body);
@@ -50,5 +52,10 @@ export class AuthController {
   @Post('request-otp')
   async requestOtp(@Body() payload: RequestOtpDto) {
     return await this.authService.requestOtp(payload);
+  }
+
+  @Post('refresh-token')
+  async refreshToken(@Body() payload: AccessTokenDto) {
+    return await this.authService.refreshToken(payload);
   }
 }

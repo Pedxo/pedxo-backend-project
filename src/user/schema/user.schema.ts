@@ -16,7 +16,10 @@ export class User extends Document {
   email: string;
 
   @Prop({ type: String })
-  accessToken: string;
+  accessToken?: string;
+
+  @Prop({ type: String })
+  refreshToken?: string;
 
   @Prop({ type: Boolean, default: false })
   isEmailVerified: boolean;
