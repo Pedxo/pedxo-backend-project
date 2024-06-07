@@ -9,19 +9,18 @@ import { AuthGuard } from './customGuard/guard.custom';
 import { UserModule } from 'src/user/user.module';
 import { OtpModule } from 'src/otp/otp.module';
 import { RefreshTokenStrategy } from './strategy/refresh-token.strategy';
+import { ENVIRONMENT } from 'src/common/constant/enivronment/enviroment';
 
 //module decorator
 @Module({
   imports: [
-    JwtModule.registerAsync({
-      global: true,
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: config.get<string>('EXPIRATION_TIME') },
+    {
+      ...JwtModule.register({
+        secret: ENVIRONMENT.JWT.JWT_SECRET,
+        signOptions: { expiresIn: ENVIRONMENT.JWT.EXPIRATION_TIME },
       }),
-      inject: [ConfigService],
-    }),
+      global: true,
+    },
     UserModule,
     OtpModule,
   ],
