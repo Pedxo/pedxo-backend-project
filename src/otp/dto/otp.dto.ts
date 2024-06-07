@@ -15,16 +15,6 @@ export class CreateOtpDTO {
   code: string;
 }
 
-// export class VerifyOTPDto {
-//   @IsNotEmpty()
-//   @IsEmail()
-//   email: string;
-
-//   @IsNotEmpty()
-//   @IsString()
-//   code: string;
-// }
-
 export class VerifyOTPDto {
   // @IsEmail()
   // @IsNotEmpty()

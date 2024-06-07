@@ -1,8 +1,7 @@
 export const generateOTPString = (): string => {
-  // Define the length of the OTP
-  const otpLength = 30;
-  const characters =
-    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  // Define the length and character of the OTP
+  const otpLength = 6;
+  const characters = '012345678910121314151617181920212223242627282930';
 
   // Generate a random OTP string of the specified length
   let otp = '';
