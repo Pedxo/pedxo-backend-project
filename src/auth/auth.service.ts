@@ -86,7 +86,7 @@ export class AuthService {
     const user = await this.userService.getByEmail(email);
 
     await this.otpService.verifyOTP({
-      // email: email,
+      email: email,
       code: code,
       type: OtpType.EMAIL_VERIFICATION,
     });
@@ -104,12 +104,15 @@ export class AuthService {
 
   async forgotPassword(payload: ForgetPasswordDto) {
     const { email } = payload;
+
     const user = await this.userService.getByEmail(email);
+
     await this.otpService.sendOtp({
       email: email,
       type: OtpType.RESET_PASSWORD,
       userName: user.userName,
     });
+
     return `Otp send, kindly check your email`;
   }
 

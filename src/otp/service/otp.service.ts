@@ -1,4 +1,5 @@
 import {
+  BadGatewayException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -14,7 +15,10 @@ import { OTP, OtpDocument } from '../schema/otp.schema';
 import { Model } from 'mongoose';
 import { EmailService } from 'src/node-mailer/service/email.service';
 import { OtpType } from '../enum/opt.type.enum';
-import { generateOTPString } from 'src/common/constant/generate.string';
+import {
+  generateResetOTP,
+  generateVerifyOTP,
+} from 'src/common/constant/generate.string';
 import { welcomeMessage } from 'src/common/constant/message/welcome.message';
 import { resetPasswordMessage } from 'src/common/constant/message/reset-password.message';
 
@@ -58,7 +62,7 @@ export class OtpService {
     const { code, type } = payload;
     const otp = await this.otpModel.findOne({ code, type });
     if (!otp) {
-      throw new UnauthorizedException(
+      throw new BadGatewayException(
         'Your code has either expire or is Invalid',
       );
     }
@@ -67,19 +71,23 @@ export class OtpService {
   async sendOtp(payload: SentOtpDto) {
     const { email, type, userName } = payload;
 
-    const code = generateOTPString();
+    let code: any;
 
-    let template;
-    let subject;
+    let template: any;
+    let subject: any;
 
     if (type === OtpType.EMAIL_VERIFICATION) {
+      code = generateVerifyOTP();
+
       template = await welcomeMessage(userName, code);
-      subject = `Action Request`;
+      subject = `Account Verification`;
     }
 
     if (type === OtpType.RESET_PASSWORD) {
+      code = generateResetOTP();
+
       template = await resetPasswordMessage(userName, code);
-      subject = `Action Request`;
+      subject = `Reset Password`;
     }
 
     const otp = await this.createOtp({ email, code, type });
@@ -87,6 +95,7 @@ export class OtpService {
     if (!otp) {
       throw new InternalServerErrorException('error occur while sending otp');
     }
+
     await this.mailService.sendMessage(email, subject, template);
 
     return true;
