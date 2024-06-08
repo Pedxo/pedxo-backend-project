@@ -71,4 +71,7 @@ export class AllUserDto {
 
   @Expose()
   isTalent: boolean;
+
+  @Expose()
+  isEmailVerified: boolean;
 }

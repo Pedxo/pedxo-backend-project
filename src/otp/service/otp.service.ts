@@ -2,7 +2,6 @@ import {
   BadGatewayException,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import {
   CreateOtpDTO,

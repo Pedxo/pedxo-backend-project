@@ -70,6 +70,12 @@ export class AuthService {
       throw new BadRequestException('password do not matched');
     }
 
+    if (!user.isEmailVerified) {
+      throw new BadRequestException(
+        'You have to verify you account before logging in',
+      );
+    }
+
     const token = await this.token(user);
 
     const accessToken = token.accessToken;
