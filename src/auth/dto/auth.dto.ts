@@ -52,8 +52,9 @@ export class RequestOtpDto {
   @IsEnum(OtpType)
   type: OtpType;
 }
-export class AccessTokenDto {
-  @IsNotEmpty()
-  @IsString()
-  accessToken: string;
-}
+
+// export class AccessTokenDto {
+//   @IsNotEmpty()
+//   @IsString()
+//   accessToken: string;
+// }

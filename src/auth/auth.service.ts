@@ -12,7 +12,6 @@ import { LoginUserDTO } from '../user/dto/login.user.dto';
 import { UserService } from 'src/user/user.service';
 import { OtpService } from '../otp/service/otp.service';
 import {
-  AccessTokenDto,
   ForgetPasswordDto,
   RequestOtpDto,
   ResetPasswordDto,
@@ -21,6 +20,7 @@ import {
 } from './dto/auth.dto';
 import { OtpType } from 'src/otp/enum/opt.type.enum';
 import { ENVIRONMENT } from 'src/common/constant/enivronment/enviroment';
+import { User } from 'src/user/schema/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -79,6 +79,12 @@ export class AuthService {
     const token = await this.token(user);
 
     const accessToken = token.accessToken;
+
+    const refreshToken = token.refreshToken;
+
+    user.refreshToken = refreshToken;
+
+    await user.save();
 
     return {
       user,
@@ -184,8 +190,7 @@ export class AuthService {
     };
   }
 
-  async refreshToken(payload: AccessTokenDto) {
-    const { accessToken } = payload;
+  async refreshToken(accessToken: string, iuser: User) {
     try {
       const decoded = await this.jwt.verifyAsync(accessToken, {
         secret: ENVIRONMENT.JWT.JWT_SECRET,
@@ -208,7 +213,7 @@ export class AuthService {
       const token = await this.token(user);
       return token.accessToken;
     } catch (e) {
-      throw new Error('Invalid refresh token');
+      throw new BadRequestException('Invalid refresh token');
     }
   }
 }

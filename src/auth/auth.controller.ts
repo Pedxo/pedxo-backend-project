@@ -1,9 +1,16 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDTO } from '../user/dto/create.user.dto';
 import { LoginUserDTO } from '../user/dto/login.user.dto';
 import {
-  AccessTokenDto,
   ForgetPasswordDto,
   RequestOtpDto,
   ResetPasswordDto,
@@ -12,6 +19,9 @@ import {
 } from './dto/auth.dto';
 import { Serialize } from 'src/common/interceptor/custom.interceptor';
 import { LoginResponse, UserDto } from 'src/user/dto/user.dto';
+import { AuthGuard } from './customGuard/guard.custom';
+import { CurrentUser } from 'src/common/decorator/current.logged.user';
+import { User } from 'src/user/schema/user.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -54,8 +64,12 @@ export class AuthController {
     return await this.authService.requestOtp(payload);
   }
 
-  @Post('refresh-token')
-  async refreshToken(@Body() payload: AccessTokenDto) {
-    return await this.authService.refreshToken(payload);
+  @UseGuards(AuthGuard)
+  @Get('refresh-token/:token')
+  async refreshToken(
+    @Param('token') accessToken: string,
+    @CurrentUser() user: User,
+  ) {
+    return await this.authService.refreshToken(accessToken, user);
   }
 }
