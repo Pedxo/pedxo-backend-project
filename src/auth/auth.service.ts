@@ -172,6 +172,7 @@ export class AuthService {
   }
   async token(payload: any) {
     payload = {
+      userName: payload.userName,
       _id: payload._id,
       firstName: payload.firstName,
       lastName: payload.lastName,
@@ -194,13 +195,13 @@ export class AuthService {
     };
   }
 
-  async refreshToken(randomToken: string) {
+  async refreshToken(randomToken: string, userId: string) {
     try {
       // const decoded = await this.jwt.verifyAsync(accessToken, {
       //   secret: ENVIRONMENT.JWT.JWT_SECRET,
       // });
 
-      const user = await this.userService.findOne(randomToken);
+      const user = await this.userService.findOne(userId, randomToken);
 
       if (!user || !user.refreshToken) {
         throw new BadRequestException('Invalid request');
