@@ -65,8 +65,8 @@ export class AuthController {
   }
 
   //@UseGuards(AuthGuard)
-  @Get('refresh-token/:accessToken')
-  async refreshToken(@Param('token') accessToken: string) {
-    return await this.authService.refreshToken(accessToken);
+  @Get('refresh-token/:randomToken')
+  async refreshToken(@Param('randomToken') randomToken: string) {
+    return await this.authService.refreshToken(randomToken);
   }
 }

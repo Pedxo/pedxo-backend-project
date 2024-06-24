@@ -18,6 +18,9 @@ export class User extends Document {
   @Prop({ type: String })
   accessToken?: string;
 
+  @Prop({type: String})
+  randomToken?: string
+
   @Prop({ type: String })
   refreshToken?: string;
 

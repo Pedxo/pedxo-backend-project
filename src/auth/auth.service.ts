@@ -21,6 +21,7 @@ import {
 import { OtpType } from 'src/otp/enum/opt.type.enum';
 import { ENVIRONMENT } from 'src/common/constant/enivronment/enviroment';
 import { User } from 'src/user/schema/user.schema';
+import { generateRandomTokenForLoggedIn } from 'src/common/constant/generate.string';
 
 @Injectable()
 export class AuthService {
@@ -76,6 +77,8 @@ export class AuthService {
       );
     }
 
+    const randomToken = await generateRandomTokenForLoggedIn();
+
     const token = await this.token(user);
 
     const accessToken = token.accessToken;
@@ -83,6 +86,7 @@ export class AuthService {
     const refreshToken = token.refreshToken;
 
     user.refreshToken = refreshToken;
+    user.randomToken = randomToken;
 
     await user.save();
 
@@ -190,25 +194,25 @@ export class AuthService {
     };
   }
 
-  async refreshToken(accessToken: string) {
+  async refreshToken(randomToken: string) {
     try {
-      const decoded = await this.jwt.verifyAsync(accessToken, {
-        secret: ENVIRONMENT.JWT.JWT_SECRET,
-      });
+      // const decoded = await this.jwt.verifyAsync(accessToken, {
+      //   secret: ENVIRONMENT.JWT.JWT_SECRET,
+      // });
 
-      const user = await this.userService.getById(decoded._id);
+      const user = await this.userService.findOne(randomToken);
 
       if (!user || !user.refreshToken) {
         throw new BadRequestException('Invalid request');
       }
 
-      const decodeRefreshToken = await this.jwt.verifyAsync(user.refreshToken, {
-        secret: ENVIRONMENT.JWT.JWT_REFRESH_SECRET,
-      });
+      // const decodeRefreshToken = await this.jwt.verifyAsync(user.refreshToken, {
+      //   secret: ENVIRONMENT.JWT.JWT_REFRESH_SECRET,
+      // });
 
-      if (decodeRefreshToken._id !== decoded._id) {
-        throw new ForbiddenException();
-      }
+      // if (decodeRefreshToken._id !== user._id) {
+      //   throw new ForbiddenException();
+      // }
 
       const token = await this.token(user);
       return token.accessToken;

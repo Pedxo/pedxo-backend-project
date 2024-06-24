@@ -47,6 +47,9 @@ export class user {
 
   @Expose()
   isTalent: boolean;
+
+  @Expose()
+  randomToken: string;
 }
 export class LoginResponse {
   @Expose()

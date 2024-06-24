@@ -28,3 +28,19 @@ export const generateVerifyOTP = (): string => {
 
   return otp;
 };
+
+export const generateRandomTokenForLoggedIn = async (): Promise<string> => {
+  // Define the length and character of the OTP
+  const otpLength = 5;
+  const characters =
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  // Generate a random OTP string of the specified length
+  let otp = '';
+  for (let i = 0; i < otpLength; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    otp += characters[randomIndex];
+  }
+
+  return otp;
+};

@@ -78,6 +78,14 @@ export class UserService {
     return user;
   }
 
+  async findOne(randomToken: string) {
+    const user = await this.userModel.findOne({ randomToken: randomToken });
+    if (!user) {
+      throw new NotFoundException('user is not found');
+    }
+    return user;
+  }
+
   async getByEmail(email: string) {
     const user = await this.userModel.findOne({ email });
     if (!user) {
