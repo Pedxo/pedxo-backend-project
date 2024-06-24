@@ -64,12 +64,9 @@ export class AuthController {
     return await this.authService.requestOtp(payload);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('refresh-token/:token')
-  async refreshToken(
-    @Param('token') accessToken: string,
-    @CurrentUser() user: User,
-  ) {
-    return await this.authService.refreshToken(accessToken, user);
+  //@UseGuards(AuthGuard)
+  @Get('refresh-token/:accessToken')
+  async refreshToken(@Param('token') accessToken: string) {
+    return await this.authService.refreshToken(accessToken);
   }
 }

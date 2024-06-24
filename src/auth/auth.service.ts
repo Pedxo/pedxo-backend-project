@@ -190,7 +190,7 @@ export class AuthService {
     };
   }
 
-  async refreshToken(accessToken: string, iuser: User) {
+  async refreshToken(accessToken: string) {
     try {
       const decoded = await this.jwt.verifyAsync(accessToken, {
         secret: ENVIRONMENT.JWT.JWT_SECRET,
