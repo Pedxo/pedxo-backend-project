@@ -9,8 +9,8 @@ export class User extends Document {
   @Prop({ required: true })
   lastName: string;
 
-  @Prop({ required: true, unique: true })
-  userName: string;
+  // @Prop({ required: true, unique: true })
+  // userName: string;
 
   @Prop({ required: true, unique: true })
   email: string;
@@ -18,8 +18,8 @@ export class User extends Document {
   @Prop({ type: String })
   accessToken?: string;
 
-  @Prop({type: String})
-  randomToken?: string
+  @Prop({ type: String })
+  randomToken?: string;
 
   @Prop({ type: String })
   refreshToken?: string;

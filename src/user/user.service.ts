@@ -37,7 +37,6 @@ export class UserService {
     await this.otpService.sendOtp({
       email: result.email,
       type: OtpType.EMAIL_VERIFICATION,
-      userName: result.userName,
     });
 
     delete result['_doc'].password;

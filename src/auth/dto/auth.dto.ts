@@ -27,16 +27,6 @@ export class ResetPasswordDto {
   email: string;
 }
 
-// export class VerifyForgetPasswordDto {
-//   @IsNotEmpty()
-//   @IsString()
-//   email: string;
-
-//   @IsNotEmpty()
-//   @IsString()
-//   code: string;
-// }
-
 export class VerifyForgetPasswordDto {
   @IsNotEmpty()
   @IsString()
@@ -52,9 +42,3 @@ export class RequestOtpDto {
   @IsEnum(OtpType)
   type: OtpType;
 }
-
-// export class AccessTokenDto {
-//   @IsNotEmpty()
-//   @IsString()
-//   accessToken: string;
-// }

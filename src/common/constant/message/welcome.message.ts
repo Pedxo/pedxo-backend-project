@@ -1,7 +1,7 @@
-export const welcomeMessage = async (username: string, code: string) => {
+export const welcomeMessage = async (email: string, code: string) => {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h2 style="color: #cca300; font-weight: bold; font-size: 24px; margin-bottom: 20px;">Congratulations, ${username}!</h2>
+      <h2 style="color: #cca300; font-weight: bold; font-size: 24px; margin-bottom: 20px;">Congratulations, ${email}!</h2>
       <p style="font-size: 16px; line-height: 1.5; color: #333;">You are one step closer to becoming one of the builders who receive our building support!</p>
       
       <p style="font-size: 16px; line-height: 1.5; color: #333;">

@@ -33,26 +33,23 @@ export class AuthService {
 
   //sign up account endpoint
   async create(body: CreateUserDTO) {
-    const { email, userName } = body;
+    const { email } = body;
 
-    const userExist = await this.userService.getByEmailOrUserName(
-      email,
-      userName,
-    );
+    const userExist = await this.userService.getByEmailOrUserName(email);
 
     if (userExist) {
-      if (userExist.email === email && userExist.userName === userName) {
-        throw new UnprocessableEntityException(
-          'email and username already exist',
-        );
-      }
+      // if (userExist.email === email && userExist.userName === userName) {
+      //   throw new UnprocessableEntityException(
+      //     'email and username already exist',
+      //   );
+      // }
 
       if (userExist.email === email) {
         throw new UnprocessableEntityException('email already exist');
       }
-      if (userExist.userName === userName) {
-        throw new UnprocessableEntityException('username already exist');
-      }
+      // if (userExist.userName === userName) {
+      //   throw new UnprocessableEntityException('username already exist');
+      // }
     }
 
     return await this.userService.create(body);
@@ -126,7 +123,6 @@ export class AuthService {
     await this.otpService.sendOtp({
       email: email,
       type: OtpType.RESET_PASSWORD,
-      userName: user.userName,
     });
 
     return `Otp send, kindly check your email`;
@@ -166,7 +162,6 @@ export class AuthService {
     const otp = await this.otpService.sendOtp({
       email: user.email,
       type: type,
-      userName: user.userName,
     });
     return otp;
   }
@@ -197,10 +192,6 @@ export class AuthService {
 
   async refreshToken(randomToken: string) {
     try {
-      // const decoded = await this.jwt.verifyAsync(accessToken, {
-      //   secret: ENVIRONMENT.JWT.JWT_SECRET,
-      // });
-
       const user = await this.userService.findOne(randomToken);
 
       if (!user || !user.refreshToken) {

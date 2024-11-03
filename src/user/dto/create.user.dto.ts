@@ -17,16 +17,11 @@ export class CreateUserDTO {
   lastName?: string;
 
   @IsNotEmpty()
-  @IsString()
-  @Transform(({ value }) => value.trim())
-  userName: string;
-
-  @IsNotEmpty()
   @IsEmail()
   @Transform(({ value }) => value.toLowerCase())
   email: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
+  @IsString()
   password: string;
 }

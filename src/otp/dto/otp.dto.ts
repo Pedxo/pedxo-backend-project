@@ -1,4 +1,10 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { OtpType } from '../enum/opt.type.enum';
 
 export class CreateOtpDTO {
@@ -39,8 +45,4 @@ export class SentOtpDto {
   @IsEnum(OtpType)
   @IsNotEmpty()
   type: OtpType;
-
-  @IsEmail()
-  @IsNotEmpty()
-  userName: string;
 }

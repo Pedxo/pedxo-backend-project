@@ -68,7 +68,7 @@ export class OtpService {
     return otp;
   }
   async sendOtp(payload: SentOtpDto) {
-    const { email, type, userName } = payload;
+    const { email, type } = payload;
 
     let code: any;
 
@@ -78,14 +78,14 @@ export class OtpService {
     if (type === OtpType.EMAIL_VERIFICATION) {
       code = generateVerifyOTP();
 
-      template = await welcomeMessage(userName, code);
+      template = await welcomeMessage(email, code);
       subject = `Account Verification`;
     }
 
     if (type === OtpType.RESET_PASSWORD) {
       code = generateResetOTP();
 
-      template = await resetPasswordMessage(userName, code);
+      template = await resetPasswordMessage(email, code);
       subject = `Reset Password`;
     }
 
