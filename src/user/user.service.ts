@@ -56,19 +56,26 @@ export class UserService {
   }
 
   async update(payload: Update, user: User) {
-    const id = user._id.toString();
-    await this.userModel.findByIdAndUpdate(
-      id,
-      { ...payload },
-      {
-        new: true,
-      },
-    );
-    return {
-      Response: `you have successfully updated your profile with`,
-    };
-  }
+    try {
+      const id = user._id.toString();
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        id,
+        { ...payload },
+        { new: true },
+      );
 
+      if (!updatedUser) {
+        return { Response: 'User not found or update failed.' };
+      }
+
+      return {
+        Response: `Profile successfully updated with the following changes: ${JSON.stringify(payload)}`,
+        updatedUser,
+      };
+    } catch (error) {
+      return { Response: `An error occurred during update: ${error.message}` };
+    }
+  }
   async getById(id: string) {
     const user = await this.userModel.findById(id);
     if (!user) {
