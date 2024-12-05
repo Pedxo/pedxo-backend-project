@@ -10,6 +10,7 @@ import { MailModule } from './node-mailer/mailer.module';
 import { OtpModule } from './otp/otp.module';
 import { OutSourceModule } from './outsource/outsource.module';
 import { BookDemoModule } from './bookdemo/module/demo.module';
+import { ContractModule } from './contracts/contract.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { BookDemoModule } from './bookdemo/module/demo.module';
     OtpModule,
     OutSourceModule,
     BookDemoModule,
+    ContractModule,
   ],
   controllers: [],
   providers: [],

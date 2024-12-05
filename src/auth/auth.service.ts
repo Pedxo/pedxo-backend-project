@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -38,18 +37,9 @@ export class AuthService {
     const userExist = await this.userService.getByEmailOrUserName(email);
 
     if (userExist) {
-      // if (userExist.email === email && userExist.userName === userName) {
-      //   throw new UnprocessableEntityException(
-      //     'email and username already exist',
-      //   );
-      // }
-
       if (userExist.email === email) {
         throw new UnprocessableEntityException('email already exist');
       }
-      // if (userExist.userName === userName) {
-      //   throw new UnprocessableEntityException('username already exist');
-      // }
     }
 
     return await this.userService.create(body);
@@ -129,7 +119,6 @@ export class AuthService {
   }
 
   async verifyPasswordOtp(payload: VerifyForgetPasswordDto) {
-    // const { email, code } = payload;
     const { code } = payload;
 
     const otp = await this.otpService.verifyOTP({
@@ -197,14 +186,6 @@ export class AuthService {
       if (!user || !user.refreshToken) {
         throw new BadRequestException('Invalid request');
       }
-
-      // const decodeRefreshToken = await this.jwt.verifyAsync(user.refreshToken, {
-      //   secret: ENVIRONMENT.JWT.JWT_REFRESH_SECRET,
-      // });
-
-      // if (decodeRefreshToken._id !== user._id) {
-      //   throw new ForbiddenException();
-      // }
 
       const token = await this.token(user);
       return token.accessToken;
