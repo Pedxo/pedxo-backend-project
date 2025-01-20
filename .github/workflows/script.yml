@@ -60,3 +60,13 @@ jobs:
             sudo mkdir -p /var/www/backend/pedxo-backend-project
             sudo chown -R ${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_USERNAME }} /var/www/backend/pedxo-backend-project
 
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: ".,!.git,!node_modules"
+          target: /var/www/backend/pedxo-backend-project
+          strip_components: 1
+          overwrite: true
