@@ -42,10 +42,21 @@ jobs:
             echo "SSH connection successful"
             whoami
 
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v2
-#         with:
-#           node-version: 22.12.0
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 22.12.0
 
-#       - name: Install dependencies
-#         run: npm install
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create target directory
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            sudo mkdir -p /var/www/backend/pedxo-backend-project
+            sudo chown -R ${{ secrets.EC2_USERNAME }}:${{ secrets.EC2_USERNAME }} /var/www/backend/pedxo-backend-project
+
