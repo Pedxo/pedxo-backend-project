@@ -87,5 +87,5 @@ jobs:
             export PATH="$NVM_DIR/versions/node/v20.22.0/bin:$PATH"
             cd /var/www/backend/pedxo-backend-project
             npm install
-            pm2 delete pedxo-backend || true
-            pm2 start dist/main.js --name pedxo-backend
+            pm2 delete quikout-backend || true
+            pm2 start dist/main.js --name quikout-backend
