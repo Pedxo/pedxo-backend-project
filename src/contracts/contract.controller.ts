@@ -4,22 +4,99 @@ import {
   UploadedFile,
   Body,
   UseInterceptors,
+  Get,
+  Patch,
+  BadRequestException,
+  UseGuards,
+  Req,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ContractService } from './contract.service';
-import { CreateContextOptions } from 'node:vm';
-import { CreateOptions } from 'mongoose';
-import { contractCreateDto } from './dto/contract.dto';
-@Controller('')
-export class ContractController {
-  constructor(private readonly userService: ContractService) {}
+import { PersonalInfoDto } from './dto/personal-info.dto';
+import { JobDetailsDto } from './dto/job-details.dto';
+import { CompensationDto } from './dto/compensation.dto';
+import { JWTAuthGuard } from 'src/auth/customGuard/jwt.guard';
+import { S3Service } from '../s3service/s3service.service';
 
-  @Post('create/contract')
-  @UseInterceptors(FileInterceptor('signature')) // 'signature' is the form field name
-  async createUser(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() contractDetails:contractCreateDto,
-  ) {
-    return this.userService.createContract(file, contractDetails);
+const fileFilter = (req, file, callback) => {
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml'];
+  if (!allowedTypes.includes(file.mimetype)) {
+    return callback(new BadRequestException('Only PNG, JPEG, and SVG files are allowed'), false);
+  }
+  callback(null, true);
+};
+
+const uploadOptions = {
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter,
+};
+
+@Controller('contracts')
+export class ContractController {
+  constructor(
+    private readonly contractService: ContractService,
+    private readonly s3service: S3Service,
+  ) {}
+
+  private async handleRequest<T>(operation: () => Promise<T>, path: string) {
+    try {
+      const data = await operation();
+      return {
+        path,
+        status: 'success',
+        data,
+      };
+    } catch (error) {
+      const statusCode = error?.getStatus?.() || 500; // Extract status code if available, otherwise default to 500
+      return {
+        path,
+        status: 'failure',
+        statusCode,
+        data: null,
+        error: error.message,
+      };
+    }
+  }
+  
+
+  @UseGuards(JWTAuthGuard)
+  @Post('personal-info')
+  createOrUpdatePersonalInfo(@Body() dto: PersonalInfoDto) {
+    return this.handleRequest(() => this.contractService.createOrUpdatePersonalInfo(dto), 'contracts/personal-info');
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Patch('job-details')
+  updateJobDetails(@Req() req, @Body() dto: JobDetailsDto) {
+    return this.handleRequest(() => this.contractService.updateJobDetails(req.user.email, dto), 'contracts/job-details');
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Patch('compensation')
+  updateCompensation(@Req() req, @Body() dto: CompensationDto) {
+    return this.handleRequest(() => this.contractService.updateCompensation(req.user.email, dto), 'contracts/compensation');
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Post('signature')
+  @UseInterceptors(FileInterceptor('signature', uploadOptions))
+  async uploadSignature(@UploadedFile() file: Express.Multer.File, @Req() req) {
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+    return this.handleRequest(() => this.contractService.submitSignature(req.user.email, file), 'contracts/signature');
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Patch('finalize')
+  finalizeContract(@Req() req) {
+    return this.handleRequest(() => this.contractService.finalizeContract(req.user.email), 'contracts/finalize');
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Get('')
+  getContract(@Req() req) {
+    return this.handleRequest(() => this.contractService.getContract(req.user.email), 'contracts');
   }
 }
