@@ -11,6 +11,7 @@ import { Model } from 'mongoose';
 import { TalentDetailsRepository } from 'src/talent/repository/talent-details.repository';
 import { ContractService } from 'src/contracts/contract.service';
 
+
 @Injectable()
 export class HireService {
   constructor(
