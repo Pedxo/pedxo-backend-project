@@ -24,6 +24,8 @@ import { generateRandomTokenForLoggedIn } from 'src/common/constant/generate.str
 import { user } from 'src/user/dto/user.dto';
 import { LoginAdminDto } from 'src/admin/dto/admin.dto';
 import { AdminService } from 'src/admin/admin.service';
+import { googleAuth } from './interface/utility-interface';
+import { AuthProvider } from 'src/user/enum/auth-provider.enum';
 
 @Injectable()
 export class AuthService {
@@ -214,7 +216,7 @@ export class AuthService {
       {
         adminId: admin._id,
         email: admin.email,
-        role: admin.role,
+        role: 'admin',
       },
       {
         secret: ENVIRONMENT.JWT.JWT_SECRET,
@@ -230,5 +232,23 @@ export class AuthService {
         token,
       },
     };
+  }
+
+  async googleSignup(body: googleAuth) {
+    const { email } = body;
+    if (!email) {
+      throw new BadRequestException('email does not exist');
+    }
+    const check = await this.userService.checkIfUserExists(email);
+    if (check) {
+      throw new Error('user already exist');
+    }
+    const payload = {
+      firstName: body.firstName,
+      lastName: body.lastName,
+      email: email,
+      provider: 'google' as AuthProvider,
+    };
+    const user = await this.userService.registerGoogleUser(payload);
   }
 }
