@@ -253,7 +253,7 @@ export class AuthService {
 
       const { googleUser: createdUser } =
         await this.userService.registerGoogleUser(payload);
-      user = createdUser; // 👈 assign it back to outer user
+      user = createdUser;
     }
 
     const token = await this.token(user);
