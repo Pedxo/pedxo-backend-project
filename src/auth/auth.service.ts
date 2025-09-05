@@ -264,7 +264,6 @@ export class AuthService {
     user.accessToken = tokens.accessToken;
     user.randomToken = randomToken;
     await user.save();
-
     return {
       user,
       accessToken: tokens.accessToken,
