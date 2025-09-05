@@ -234,21 +234,38 @@ export class AuthService {
     };
   }
 
-  async googleSignup(body: googleAuth) {
-    const { email } = body;
+  async googleAuth(googleUser: googleAuth) {
+    const { email, firstName, lastName } = googleUser;
+
     if (!email) {
-      throw new BadRequestException('email does not exist');
+      throw new BadRequestException('Google account has no email');
     }
-    const check = await this.userService.checkIfUserExists(email);
-    if (check) {
-      throw new Error('user already exist');
+
+    let user = await this.userService.checkIfUserExists(email);
+
+    if (!user) {
+      // Register new Google user
+      const payload = {
+        firstName,
+        lastName,
+        email,
+        provider: AuthProvider.GOOGLE,
+      };
+
+      const { googleUser: createdUser } =
+        await this.userService.registerGoogleUser(payload);
+      user = createdUser;
     }
-    const payload = {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: email,
-      provider: 'google' as AuthProvider,
+
+    // Always refresh tokens when signing in
+    const tokens = await this.userService.generateAuthTokens(user);
+    user.refreshToken = tokens.refreshToken;
+    user.accessToken = tokens.accessToken;
+    await user.save();
+
+    return {
+      user,
+      accessToken: tokens.accessToken,
     };
-    const user = await this.userService.registerGoogleUser(payload);
   }
 }
