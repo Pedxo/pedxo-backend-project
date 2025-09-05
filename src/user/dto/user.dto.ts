@@ -27,6 +27,9 @@ export class UserDto {
 
   @Expose()
   randomToken: string;
+
+  @Expose()
+  refreshToken: string;
 }
 
 export class user {
