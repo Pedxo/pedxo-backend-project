@@ -81,8 +81,17 @@ export class AuthController {
   @UseGuards(Guard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
     const { accessToken } = await this.authService.googleAuth(req.user);
-    return res.redirect(
-      `http://localhost:5173/auth/success?token=${accessToken}`,
-    );
+    return res.redirect(`https://pedxo.com/auth/success?token=${accessToken}`);
+  }
+
+  @Get('github')
+  @UseGuards(Guard('github'))
+  async githubAuth(@Req() req) {}
+
+  @Get('github/redirect')
+  @UseGuards(Guard('github'))
+  async githubAuthRedirect(@Req() req, @Res() res) {
+    const { accessToken } = await this.authService.githubAuth(req.user);
+    return res.redirect(`https://pedxo.com/auth/success?token=${accessToken}`);
   }
 }
