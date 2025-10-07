@@ -19,47 +19,29 @@ import {
 } from './dto/talent.dto';
 import { User } from 'src/user/schema/user.schema';
 import { TokenGuard } from 'src/auth/customGuard/token.guard';
+import { AdminAuthGuard } from 'src/auth/customGuard/admin-auth.guard';
 
 @Controller('talent')
 export class TalentController {
   constructor(private talentService: TalentService) {}
 
-  @Get()
-  async getAll(): Promise<Talent[]> {
-    return await this.talentService.getAll();
+  // === Talent Details Routes ===
+
+  @Post('details')
+  @UseGuards(TokenGuard)
+  async createTalentDetails(@Body() data: CreateTalentDetailsDto) {
+    return await this.talentService.createTalentDetails(data);
+  }
+
+  @Get('get-all-talents')
+  @UseGuards(AdminAuthGuard)
+  async findAllTalentDetails() {
+    return await this.talentService.findAllTalentDetails();
   }
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<any> {
     return await this.talentService.getById(id);
-  }
-
-  @UseGuards(AuthGuard)
-  @Post()
-  async become(
-    @CurrentUser() user: User,
-    @Body() payload: CreateTalentDto,
-  ): Promise<any> {
-    return await this.talentService.become(user, payload);
-  }
-
-  @UseGuards(AuthGuard)
-  @Patch()
-  async update(@Body() payload: UpdateDto, @CurrentUser() user: User) {
-    return await this.talentService.update(user, payload);
-  }
-
-  // === Talent Details Routes ===
-
-  @Post('details')
-  async createTalentDetails(@Body() data: CreateTalentDetailsDto) {
-    return await this.talentService.createTalentDetails(data);
-  }
-
-  @Get('details/all')
-  @UseGuards(TokenGuard)
-  async findAllTalentDetails() {
-    return await this.talentService.findAllTalentDetails();
   }
 
   @Get('details/:id')
@@ -78,5 +60,25 @@ export class TalentController {
   @Delete('details/:id')
   async deleteTalentDetails(@Param('id') id: string) {
     return await this.talentService.deleteTalentDetails(id);
+  }
+
+  @Get()
+  async getAll(): Promise<Talent[]> {
+    return await this.talentService.getAll();
+  }
+
+  @UseGuards(AuthGuard)
+  @Post()
+  async become(
+    @CurrentUser() user: User,
+    @Body() payload: CreateTalentDto,
+  ): Promise<any> {
+    return await this.talentService.become(user, payload);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch()
+  async update(@Body() payload: UpdateDto, @CurrentUser() user: User) {
+    return await this.talentService.update(user, payload);
   }
 }
