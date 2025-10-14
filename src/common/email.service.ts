@@ -1,18 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { ContractEmailDto } from '../contracts/dto/contract.email.dto';
+import Mail from 'nodemailer/lib/mailer';
 
 @Injectable()
 export class EmailService {
   private transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    port: 465,
+    secure: true,
     auth: {
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_PASSWORD,
     },
-  });
+    tls: {
+      rejectUnauthorized: false,
+    },
+  } as SMTPTransport.Options);
 
   constructor() {
     this.verifyConnection();
@@ -30,7 +35,7 @@ export class EmailService {
   async sendMail(to: string, subject: string, content: string): Promise<void> {
     try {
       await this.transporter.sendMail({
-        from: `"Your Company" <support@pedxo.com>`,
+        from: `"Pedxo" <${process.env.GMAIL_USER}>`,
         to,
         subject,
         html: content,
@@ -88,7 +93,7 @@ export class EmailService {
   ): Promise<void> {
     try {
       await this.transporter.sendMail({
-        from: `"Your Company" <${process.env.GMAIL_USER}>`,
+        from: `"Pedxo" <${process.env.GMAIL_USER}>`,
         to,
         subject,
         text,
@@ -104,11 +109,11 @@ export class EmailService {
     to: string,
     subject: string,
     content: string,
-    attachments: nodemailer.Attachment[],
+    attachments: Mail.Attachment[],
   ): Promise<void> {
     try {
       await this.transporter.sendMail({
-        from: `"Your Company" <${process.env.GMAIL_USER}>`,
+        from: `"Pedxo" <${process.env.GMAIL_USER}>`,
         to,
         subject,
         html: content,
@@ -120,14 +125,4 @@ export class EmailService {
       throw new Error('Failed to send email with attachment');
     }
   }
-
-  // async verifyConnection(): Promise<void> {
-  //   try {
-  //     await this.transporter.verify();
-  //     console.log('Server is ready to send emails');
-  //   } catch (error) {
-  //     console.error('Failed to verify email server connection:', error);
-  //     throw new Error('Failed to verify email server connection');
-  //   }
-  // }
 }

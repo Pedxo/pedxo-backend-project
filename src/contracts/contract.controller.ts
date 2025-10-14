@@ -91,6 +91,11 @@ export class ContractController {
     );
   }
 
+  @Post('text-mail')
+  async sendWelcomeEmail(@Body('to') to: string) {
+    return this.contractService.emailNotify(to);
+  }
+
   @UseGuards(JWTAuthGuard)
   @Post('signature')
   @UseInterceptors(FileInterceptor('signature')) // handles multiple file uploads
@@ -104,7 +109,9 @@ export class ContractController {
         throw new BadRequestException('File is required');
       }
 
-      const uploadedUrl = await this.cloudinaryService.uploadFile(signature);
+      const uploadResult = await this.cloudinaryService.uploadFile(signature);
+      const uploadedUrl =
+        (uploadResult as any)?.secure_url || (uploadResult as any)?.url || '';
 
       return this.handleRequest(
         () => this.contractService.submitSignature(req.user.email, uploadedUrl),
