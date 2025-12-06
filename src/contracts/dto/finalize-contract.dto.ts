@@ -43,6 +43,7 @@ export class FinalizeContractDto {
   @IsNotEmpty()
   startDate: string;
 
+  @IsDateString()
   @IsOptional()
   endDate?: string;
 
@@ -62,10 +63,5 @@ export class FinalizeContractDto {
   // Signature (optional, may already be uploaded)
   @IsOptional()
   signature?: any;
-
-  // User ID (optional, will be set from JWT if not provided)
-  @IsString()
-  @IsOptional()
-  userId?: string;
 }
 

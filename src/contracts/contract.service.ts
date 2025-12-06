@@ -83,14 +83,14 @@ export class ContractService {
 
   async finalizeContract(email: string, userId: string, dto: any) {
     try {
-      // Use userId from DTO if provided, otherwise from JWT
-      const targetUserId = dto.userId || userId;
+      const startDate = dto.startDate ? new Date(dto.startDate) : undefined;
+      const endDate = dto.endDate ? new Date(dto.endDate) : undefined;
       
       // Prepare update payload with all fields from DTO
       const updatePayload = {
-        userId: targetUserId,
+        userId: userId, 
         clientName: dto.clientName,
-        email: dto.email,
+        email: dto.email, 
         country: dto.country,
         region: dto.region,
         companyName: dto.companyName,
@@ -99,23 +99,20 @@ export class ContractService {
         seniorityLevel: dto.seniorityLevel,
         scopeOfWork: dto.scopeOfWork,
         explanationOfScopeOfWork: dto.explanationOfScopeOfWork,
-        startDate: dto.startDate,
-        endDate: dto.endDate,
+        startDate: startDate,
+        endDate: endDate,
         paymentRate: dto.paymentRate,
         paymentFrequency: dto.paymentFrequency,
         isCompleted: true,
-        progress: 'signed',
+        progress: 'signed' as const,
       };
 
       // If signature is provided in the DTO, include it
       if (dto.signature) {
         updatePayload['signature'] = dto.signature;
       }
-
-      // Find contract by userId (more reliable than email which can be updated)
-      // Also match by email from JWT as a fallback security check
       const contract = await this.contractModel.findOneAndUpdate(
-        { $or: [{ userId: targetUserId }, { email }] },
+        { userId: userId },
         { $set: updatePayload },
         { new: true },
       );
@@ -134,6 +131,14 @@ export class ContractService {
       };
     } catch (error) {
       console.error('Error finalizing contract:', error);
+      // Handle unique constraint error for email
+      if (error.code === 11000) {
+        return {
+          error: true,
+          message: 'Email already exists in another contract',
+          data: null,
+        };
+      }
       return {
         error: true,
         message: `Error finalizing contract: ${error.message}`,
