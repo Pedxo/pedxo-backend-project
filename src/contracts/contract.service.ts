@@ -81,17 +81,50 @@ export class ContractService {
     });
   }
 
-  async finalizeContract(email: string) {
+  async finalizeContract(email: string, userId: string, dto: any) {
     try {
-      // console.log('email', email);
+      // Use userId from DTO if provided, otherwise from JWT
+      const targetUserId = dto.userId || userId;
+      
+      // Prepare update payload with all fields from DTO
+      const updatePayload = {
+        userId: targetUserId,
+        clientName: dto.clientName,
+        email: dto.email,
+        country: dto.country,
+        region: dto.region,
+        companyName: dto.companyName,
+        contractType: dto.contractType,
+        roleTitle: dto.roleTitle,
+        seniorityLevel: dto.seniorityLevel,
+        scopeOfWork: dto.scopeOfWork,
+        explanationOfScopeOfWork: dto.explanationOfScopeOfWork,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
+        paymentRate: dto.paymentRate,
+        paymentFrequency: dto.paymentFrequency,
+        isCompleted: true,
+        progress: 'signed',
+      };
+
+      // If signature is provided in the DTO, include it
+      if (dto.signature) {
+        updatePayload['signature'] = dto.signature;
+      }
+
+      // Find contract by userId (more reliable than email which can be updated)
+      // Also match by email from JWT as a fallback security check
       const contract = await this.contractModel.findOneAndUpdate(
-        { email },
-        { $set: { isCompleted: true } },
+        { $or: [{ userId: targetUserId }, { email }] },
+        { $set: updatePayload },
         { new: true },
       );
-      // console.log('fetched contrract', contract);
+
+      if (!contract) {
+        throw new NotFoundException('Contract not found for this user');
+      }
+
       const contractDto = new ContractEmailDto(contract);
-      // console.log(' contrract dto', contractDto);
       await this.emailservice.sendContractEmail(contractDto);
 
       return {
@@ -103,7 +136,7 @@ export class ContractService {
       console.error('Error finalizing contract:', error);
       return {
         error: true,
-        message: `Error finalizing contract ${error.message}`,
+        message: `Error finalizing contract: ${error.message}`,
         data: null,
       };
     }

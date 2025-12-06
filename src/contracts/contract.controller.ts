@@ -16,6 +16,7 @@ import { ContractService } from './contract.service';
 import { PersonalInfoDto } from './dto/personal-info.dto';
 import { JobDetailsDto } from './dto/job-details.dto';
 import { CompensationDto } from './dto/compensation.dto';
+import { FinalizeContractDto } from './dto/finalize-contract.dto';
 import { JWTAuthGuard } from 'src/auth/customGuard/jwt.guard';
 import { CloudinaryService } from '../s3service/s3service.service';
 import { ApiConsumes } from '@nestjs/swagger';
@@ -131,9 +132,9 @@ export class ContractController {
 
   @UseGuards(JWTAuthGuard)
   @Patch('finalize')
-  finalizeContract(@Req() req) {
+  finalizeContract(@Req() req, @Body() dto: FinalizeContractDto) {
     return this.handleRequest(
-      () => this.contractService.finalizeContract(req.user.email),
+      () => this.contractService.finalizeContract(req.user.email, req.user._id, dto),
       'contracts/finalize',
     );
   }
