@@ -234,11 +234,11 @@ export class ContractController {
   }
 
   @UseGuards(JWTAuthGuard)
-  @Delete()
+  @Delete('delete-contract')
   deleteContract(@Body() body: DeleteContractDto) {
     return this.handleRequest(
       () => this.contractService.deleteContract(body),
-      'contracts/delete',
+      'contracts/delete-contract',
     );
   }
 }
