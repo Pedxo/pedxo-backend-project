@@ -8,6 +8,7 @@ import {
   Min,
   Max,
   IsNotEmpty,
+  IsArray,
 } from 'class-validator';
 
 export class UpdateContractDto {
@@ -42,6 +43,10 @@ export class UpdateContractDto {
   @IsOptional()
   @IsString()
   paymentFrequency?: string;
+
+  @IsOptional()
+  @IsArray()
+  removeTalentIds?: string[];
 }
 export class DeleteContractDto {
   @IsMongoId()
