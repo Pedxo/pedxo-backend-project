@@ -307,14 +307,12 @@ export class ContractService {
       }
 
       // ---------- Persist contract update ----------
-      const shouldUpdate =
-        Object.keys(updateOps.$set).length || updateOps.$pull;
-
-      const updatedContract = shouldUpdate
-        ? await this.contractModel.findByIdAndUpdate(contractId, updateOps, {
-            new: true,
-          })
-        : contract;
+      const updatedContract =
+        Object.keys(updateOps.$set).length || updateOps.$pull
+          ? await this.contractModel.findByIdAndUpdate(contractId, updateOps, {
+              new: true,
+            })
+          : contract;
 
       const terminationSummary: {
         talentName: string;
