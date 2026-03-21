@@ -27,6 +27,7 @@ export class JobDetailsDto {
   endDate?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
+  // @IsNotEmpty()
   explanationOfScopeOfWork: string;
 }
