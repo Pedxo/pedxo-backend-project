@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsOptional, IsString, IsDateString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsDateString,
+} from 'class-validator';
 
 export class JobDetailsDto {
   @IsString()
@@ -10,7 +15,8 @@ export class JobDetailsDto {
   seniorityLevel?: string;
 
   @IsString()
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @IsOptional()
   scopeOfWork: string;
 
   @IsDateString()
@@ -21,6 +27,7 @@ export class JobDetailsDto {
   endDate?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
+  // @IsNotEmpty()
   explanationOfScopeOfWork: string;
 }

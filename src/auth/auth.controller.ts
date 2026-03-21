@@ -26,6 +26,7 @@ import { CurrentUser } from 'src/common/decorator/current.logged.user';
 import { User } from 'src/user/schema/user.schema';
 import { AuthGuard as Guard } from '@nestjs/passport';
 import { Response } from 'express';
+import { GoogleAuthGuard } from './customGuard/google.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -93,11 +94,35 @@ export class AuthController {
   @UseGuards(Guard('google'))
   async googleAuth(@Req() req) {}
 
+  // @Get('google/redirect')
+  // @UseGuards(Guard('google'))
+  // async googleAuthRedirect(@Req() req, @Res() res) {
+  //   const { accessToken } = await this.authService.googleAuth(req.user);
+  //   return res.redirect(`https://pedxo.com/auth/success?token=${accessToken}`);
+  // }
+
   @Get('google/redirect')
-  @UseGuards(Guard('google'))
-  async googleAuthRedirect(@Req() req, @Res() res) {
-    const { accessToken } = await this.authService.googleAuth(req.user);
-    return res.redirect(`https://pedxo.com/auth/success?token=${accessToken}`);
+  // @UseGuards(Guard('google'))
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    try {
+      if (req.query?.error) {
+        return res.redirect(`https://pedxo.com/login?error=google_cancelled`);
+      }
+
+      if (!req.user) {
+        return res.redirect(`https://pedxo.com/login`);
+      }
+
+      const { accessToken } = await this.authService.googleAuth(req.user);
+
+      return res.redirect(
+        `https://pedxo.com/auth/success?token=${accessToken}`,
+      );
+    } catch (error) {
+      console.error('Google Auth Error:', error);
+      return res.redirect(`https://pedxo.com/login?error=google_failed`);
+    }
   }
 
   @Get('github')
