@@ -15,7 +15,8 @@ export class JobDetailsDto {
   seniorityLevel?: string;
 
   @IsString()
-  @IsNotEmpty()
+  // @IsNotEmpty()
+  @IsOptional()
   scopeOfWork: string;
 
   @IsDateString()
@@ -26,7 +27,6 @@ export class JobDetailsDto {
   endDate?: string;
 
   @IsString()
-  @IsOptional()
-  // @IsNotEmpty()
+  @IsNotEmpty()
   explanationOfScopeOfWork: string;
 }
