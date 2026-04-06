@@ -54,6 +54,29 @@ export class HireService {
     };
   }
 
+  private async calculateNextPaymentDate(
+    startDate: Date,
+    frequency: string,
+  ): Promise<Date> {
+    const date = new Date(startDate);
+
+    switch (frequency) {
+      case 'weekly':
+        date.setDate(date.getDate() + 7);
+        break;
+      case 'biweekly':
+        date.setDate(date.getDate() + 14);
+        break;
+      case 'monthly':
+        date.setMonth(date.getMonth() + 1);
+        break;
+      default:
+        throw new Error('Invalid payment frequency');
+    }
+
+    return date;
+  }
+
   async talent(payload: HireDTO, user: User) {
     const { _id } = user;
 
@@ -122,9 +145,21 @@ export class HireService {
       );
 
       if (updatedContract.talentAssignedId?.length > 0) {
+        const nextPaymentDate = this.calculateNextPaymentDate(
+          updatedContract.startDate,
+          updatedContract.paymentFrequency,
+        );
+
         updatedContract = await this.contractModel.findByIdAndUpdate(
           contractId,
-          { $set: { status: 'assigned' } },
+          {
+            $set: {
+              status: 'assigned',
+              lastPaymentDate: null,
+              nextPaymentDate: nextPaymentDate,
+              isPaymentActive: true,
+            },
+          },
           { new: true },
         );
       }

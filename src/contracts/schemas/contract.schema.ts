@@ -45,6 +45,15 @@ export class Contract {
   endDate?: Date;
 
   @Prop()
+  lastPaymentDate?: Date;
+
+  @Prop()
+  nextPaymentDate?: Date;
+
+  @Prop({ default: false })
+  isPaymentActive?: boolean;
+
+  @Prop()
   paymentRate: number;
 
   @Prop()
