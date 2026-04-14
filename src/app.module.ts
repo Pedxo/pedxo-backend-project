@@ -16,9 +16,11 @@ import { S3serviceModule } from './s3service/s3service.module';
 import * as dotenv from 'dotenv';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { ScheduleModule } from '@nestjs/schedule';
 dotenv.config();
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
