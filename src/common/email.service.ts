@@ -561,6 +561,70 @@ export class EmailService {
     await this.sendMail(payload.to, 'Contract updated on Pedxo', emailBody);
   }
 
+  async sendAdminPayoutNotification(payload: {
+    adminEmail: string;
+    contract: any;
+    talent: {
+      id: string;
+      name: string;
+      accountNumber: string;
+      bankName: string;
+    };
+    amount: number;
+  }) {
+    const emailBody = `
+    <h2>💸 Payout Processed</h2>
+
+    <h3>Contract</h3>
+    <p><strong>Company:</strong> ${payload.contract.companyName}</p>
+    <p><strong>Client:</strong> ${payload.contract.clientName}</p>
+
+    <h3>Talent Payment Details</h3>
+    <p><strong>Name:</strong> ${payload.talent.name}</p>
+    <p><strong>Bank:</strong> ${payload.talent.bankName}</p>
+    <p><strong>Account Number:</strong> ${payload.talent.accountNumber}</p>
+
+    <h3>Amount</h3>
+    <p><strong>₦${payload.amount}</strong></p>
+
+    <p>Please proceed with transfer.</p>
+  `;
+
+    await this.sendMail(
+      payload.adminEmail,
+      'Payout Ready - Transfer Talent',
+      emailBody,
+    );
+  }
+
+  async sendUserPayoutReceipt(payload: {
+    to: string;
+    amount: number;
+    openingBalance: number;
+    closingBalance: number;
+    accountNumber: string;
+    talentName: string;
+  }) {
+    const emailBody = `
+    <h2>💳 Payment Receipt</h2>
+
+    <p>Your payment has been processed successfully.</p>
+
+    <h3>Transaction Details</h3>
+    <p><strong>Account Number:</strong> ${payload.accountNumber}</p>
+    <p><strong>Amount Debited:</strong> ₦${payload.amount}</p>
+    <p><strong>Opening Balance:</strong> ₦${payload.openingBalance}</p>
+    <p><strong>Closing Balance:</strong> ₦${payload.closingBalance}</p>
+    <p><strong>Paid To:</strong> ${payload.talentName}</p>
+    <hr />
+    <p>If you have any questions, contact support.</p>
+
+    <p><strong>Pedxo Team</strong></p>
+  `;
+
+    await this.sendMail(payload.to, 'Payment Receipt', emailBody);
+  }
+
   async sendContractDeletedEmail(payload: {
     to: string;
     contract: {
