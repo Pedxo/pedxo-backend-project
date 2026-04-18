@@ -5,6 +5,11 @@ import { Model } from 'mongoose';
 import axios from 'axios';
 import { Contract, ContractDocument } from './schemas/contract.schema';
 import { UserService } from 'src/user/user.service';
+import { EmailService } from 'src/common/email.service';
+import {
+  TalentDetails,
+  TalentDetailsDocument,
+} from 'src/talent/schemas/talent-details.schema';
 
 interface PedxoUserResponse {
   items: {
@@ -32,6 +37,9 @@ export class ContractCronService {
   constructor(
     @InjectModel(Contract.name) private contractModel: Model<ContractDocument>,
     private readonly userService: UserService,
+    private readonly emailService: EmailService,
+    @InjectModel(TalentDetails.name)
+    private talentModel: Model<TalentDetailsDocument>,
   ) {}
 
   // ⏰ Runs every day at midnight
@@ -96,6 +104,18 @@ export class ContractCronService {
 
   async payTalent(contract: ContractDocument, talentId: string) {
     try {
+      const talent = await this.talentModel.findOne({ talentId });
+
+      if (!talent) {
+        this.logger.warn(`Talent not found for ID ${talentId}`);
+        return;
+      }
+
+      const talentName = `${talent.firstName} ${talent.lastName}`;
+      const talentAccountNumber = talent.accountNumber;
+      const talentBankName = talent.bankName;
+      // const talentEmail = talent.email;
+
       const pedxoPayUrl = process.env.PEDXO_PAY_URL;
 
       const user = await this.userService.findUserById(contract.userId);
@@ -111,17 +131,59 @@ export class ContractCronService {
       }
 
       const userAccount = accounts[0];
-      if (parseFloat(userAccount.balance) < contract.paymentRate) {
+      const openingBalance = parseFloat(userAccount.balance);
+      if (openingBalance < contract.paymentRate) {
         this.logger.warn(`Insufficient funds for user ${userEmail}`);
         return;
       }
 
       // 💸 trigger payout
-      await axios.post(`${pedxoPayUrl}/transaction/payout`, {
-        type: 'payout',
+      await axios.post(
+        `${pedxoPayUrl}/transaction/payout`,
+        {
+          type: 'payout',
+          amount: contract.paymentRate,
+          account_number: userAccount.account_number,
+          ini_reference: `AUTO-${Date.now()}`,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PEDXO_PAY_SECRET_KEY}`,
+          },
+        },
+      );
+
+      // 🔁 fetch again AFTER payment
+      const updatedUserResponse = await axios.get<PedxoUserResponse>(
+        `${pedxoPayUrl}/account/users/${userEmail}`,
+      );
+
+      const updatedAccount = updatedUserResponse.data.items[0]?.accounts[0];
+
+      const closingBalance = parseFloat(updatedAccount.balance);
+
+      // ✅ SEND EMAILS
+
+      // 1. Admin
+      await this.emailService.sendAdminPayoutNotification({
+        adminEmail: process.env.OWNER_EMAIL,
+        contract,
+        talent: {
+          id: talentId,
+          accountNumber: talentAccountNumber,
+          name: talentName,
+          bankName: talentBankName,
+        },
         amount: contract.paymentRate,
-        account_number: userAccount.account_number,
-        ini_reference: `AUTO-${Date.now()}`,
+      });
+      // 2. User
+      await this.emailService.sendUserPayoutReceipt({
+        to: userEmail,
+        amount: contract.paymentRate,
+        openingBalance,
+        closingBalance,
+        accountNumber: talentAccountNumber,
+        talentName,
       });
 
       this.logger.log(`Paid talent ${talentId} for contract `);
