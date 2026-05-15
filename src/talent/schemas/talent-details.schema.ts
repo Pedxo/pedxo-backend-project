@@ -49,6 +49,12 @@ export class TalentDetails {
   @Prop({ type: String })
   githubAccount?: string;
 
+  @Prop({ type: String })
+  linkedInAccount?: string;
+
+  @Prop({ type: String })
+  twitterAccount?: string;
+
   @Prop({ type: String, required: true })
   portfolioLink: string;
 

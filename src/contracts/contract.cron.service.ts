@@ -96,7 +96,7 @@ export class ContractCronService {
         lastPaymentDate: contract.nextPaymentDate,
         nextPaymentDate: this.calculateNextPaymentDate(
           contract.nextPaymentDate,
-          contract.paymentFrequency,
+          contract.paymentFrequency?.trim().toLowerCase(),
         ),
       });
     }

@@ -38,6 +38,8 @@ export class HireService {
           email: talent.email,
           country: talent.country,
           githubAccount: talent.githubAccount,
+          linkedInAccount: talent.linkedInAccount,
+          twitterAccount: talent.twitterAccount,
           portfolio: talent.portfolioLink,
           paymentRate: contract?.paymentRate,
           paymentFrequency: contract?.paymentFrequency,
@@ -145,11 +147,12 @@ export class HireService {
       );
 
       if (updatedContract.talentAssignedId?.length > 0) {
+        const freq = updatedContract.paymentFrequency;
+
         const nextPaymentDate = this.calculateNextPaymentDate(
           updatedContract.startDate,
-          updatedContract.paymentFrequency,
+          freq?.trim().toLowerCase(),
         );
-
         updatedContract = await this.contractModel.findByIdAndUpdate(
           contractId,
           {
