@@ -133,6 +133,14 @@ export class CreateTalentDetailsDto {
   @IsString()
   githubAccount: string;
 
+  @IsOptional()
+  @IsString()
+  linkedInAccount: string;
+
+  @IsOptional()
+  @IsString()
+  twitterAccount: string;
+
   @IsNotEmpty()
   @IsString()
   portfolioLink: string;
