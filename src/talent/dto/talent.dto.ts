@@ -96,6 +96,10 @@ export class SocialProfilesDto {
 
   @IsOptional()
   @IsUrl()
+  facebookAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
   instagramAccount?: string;
 
   @IsOptional()

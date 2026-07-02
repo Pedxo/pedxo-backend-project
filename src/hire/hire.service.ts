@@ -38,6 +38,7 @@ export class HireService {
             linkedin: talent.socialProfiles.linkedinAccount,
             gitlab: talent.socialProfiles.gitlabAccount,
             twitter: talent.socialProfiles.twitterAccount,
+            facebook: talent.socialProfiles.facebookAccount,
             instagram: talent.socialProfiles.instagramAccount,
             tiktok: talent.socialProfiles.tiktokAccount,
             youtube: talent.socialProfiles.youtubeAccount,
