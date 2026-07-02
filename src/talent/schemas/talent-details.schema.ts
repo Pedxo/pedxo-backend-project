@@ -49,17 +49,40 @@ export class TalentDetails {
   @Prop({ type: String })
   githubAccount?: string;
 
-  @Prop({ type: String })
-  linkedInAccount?: string;
-
-  @Prop({ type: String })
-  twitterAccount?: string;
+  @Prop({
+    type: {
+      linkedinAccount: { type: String },
+      gitlabAccount: { type: String },
+      twitterAccount: { type: String },
+      instagramAccount: { type: String },
+      tiktokAccount: { type: String },
+      youtubeAccount: { type: String },
+      behanceAccount: { type: String },
+      dribbbleAccount: { type: String },
+      other: { type: String },
+    },
+    default: {},
+  })
+  socialProfiles: {
+    linkedinAccount?: string;
+    gitlabAccount?: string;
+    twitterAccount?: string;
+    instagramAccount?: string;
+    tiktokAccount?: string;
+    youtubeAccount?: string;
+    behanceAccount?: string;
+    dribbbleAccount?: string;
+    other?: string;
+  };
 
   @Prop({ type: String, required: true })
   portfolioLink: string;
 
   @Prop({ type: String, required: true })
   whatsappNumber: string;
+
+  @Prop({ type: String, required: true })
+  homeAddress: string;
 }
 
 export const TalentDetailsSchema = SchemaFactory.createForClass(TalentDetails);
