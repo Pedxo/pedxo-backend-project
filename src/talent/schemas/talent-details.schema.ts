@@ -54,6 +54,7 @@ export class TalentDetails {
       linkedinAccount: { type: String },
       gitlabAccount: { type: String },
       twitterAccount: { type: String },
+      facebookAccount: { type: String },
       instagramAccount: { type: String },
       tiktokAccount: { type: String },
       youtubeAccount: { type: String },
@@ -67,6 +68,7 @@ export class TalentDetails {
     linkedinAccount?: string;
     gitlabAccount?: string;
     twitterAccount?: string;
+    facebookAccount?: string;
     instagramAccount?: string;
     tiktokAccount?: string;
     youtubeAccount?: string;
