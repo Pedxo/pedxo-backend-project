@@ -33,13 +33,28 @@ export class HireService {
         const talent = await this.talentRepo.findByTalentId(talentId);
         if (!talent) return null;
 
+        const socialProfiles = Object.fromEntries(
+          Object.entries({
+            linkedin: talent.socialProfiles.linkedinAccount,
+            gitlab: talent.socialProfiles.gitlabAccount,
+            twitter: talent.socialProfiles.twitterAccount,
+            facebook: talent.socialProfiles.facebookAccount,
+            instagram: talent.socialProfiles.instagramAccount,
+            tiktok: talent.socialProfiles.tiktokAccount,
+            youtube: talent.socialProfiles.youtubeAccount,
+            behance: talent.socialProfiles.behanceAccount,
+            dribbble: talent.socialProfiles.dribbbleAccount,
+            other: talent.socialProfiles.other,
+            portfolio: talent.portfolioLink,
+          }).filter(([, value]) => value),
+        );
+
         return {
           fullName: `${talent.firstName} ${talent.lastName}`,
           email: talent.email,
           country: talent.country,
           githubAccount: talent.githubAccount,
-          linkedInAccount: talent.linkedInAccount,
-          twitterAccount: talent.twitterAccount,
+          socialProfiles,
           portfolio: talent.portfolioLink,
           paymentRate: contract?.paymentRate,
           paymentFrequency: contract?.paymentFrequency,

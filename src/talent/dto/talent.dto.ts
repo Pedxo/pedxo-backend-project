@@ -7,6 +7,8 @@ import {
   IsString,
   IsEmail,
   IsDate,
+  IsUrl,
+  ValidateNested,
   // isEnum,
 } from 'class-validator';
 import {
@@ -79,6 +81,48 @@ export class CreateTalentDto {
   image?: object;
 }
 
+export class SocialProfilesDto {
+  @IsOptional()
+  @IsUrl()
+  linkedinAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  gitlabAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  twitterAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  facebookAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  instagramAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  tiktokAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  youtubeAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  behanceAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  dribbbleAccount?: string;
+
+  @IsOptional()
+  @IsUrl()
+  other?: string;
+}
+
 export class CreateTalentDetailsDto {
   @IsNotEmpty()
   @IsString()
@@ -134,12 +178,9 @@ export class CreateTalentDetailsDto {
   githubAccount: string;
 
   @IsOptional()
-  @IsString()
-  linkedInAccount: string;
-
-  @IsOptional()
-  @IsString()
-  twitterAccount: string;
+  @ValidateNested()
+  @Type(() => SocialProfilesDto)
+  socialProfiles?: SocialProfilesDto;
 
   @IsNotEmpty()
   @IsString()
@@ -148,6 +189,9 @@ export class CreateTalentDetailsDto {
   @IsNotEmpty()
   @IsString()
   whatsappNumber: string;
+
+  @IsString()
+  homeAddress: string;
 
   @IsNotEmpty()
   @IsString()
