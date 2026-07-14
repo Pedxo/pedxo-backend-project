@@ -16,6 +16,7 @@ import {
   CreateTalentDto,
   UpdateDto,
   CreateTalentDetailsDto,
+  UpdateDetailsDto,
 } from './dto/talent.dto';
 import { User } from 'src/user/schema/user.schema';
 import { TokenGuard } from 'src/auth/customGuard/token.guard';
@@ -39,10 +40,10 @@ export class TalentController {
     return await this.talentService.findAllTalentDetails();
   }
 
-  @Get(':id')
-  async getById(@Param('id') id: string): Promise<any> {
-    return await this.talentService.getById(id);
-  }
+  // @Get(':id')
+  // async getById(@Param('id') id: string): Promise<any> {
+  //   return await this.talentService.getById(id);
+  // }
 
   @Get('details/:id')
   async findTalentDetailsById(@Param('id') id: string) {
@@ -50,14 +51,16 @@ export class TalentController {
   }
 
   @Patch('details/:id')
+  @UseGuards(AdminAuthGuard)
   async updateTalentDetails(
     @Param('id') id: string,
-    @Body() data: CreateTalentDetailsDto,
+    @Body() data: UpdateDetailsDto,
   ) {
     return await this.talentService.updateTalentDetails(id, data);
   }
 
   @Delete('details/:id')
+  @UseGuards(AdminAuthGuard)
   async deleteTalentDetails(@Param('id') id: string) {
     return await this.talentService.deleteTalentDetails(id);
   }
