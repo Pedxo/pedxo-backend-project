@@ -4,6 +4,7 @@ import { CurrentUser } from 'src/common/decorator/current.logged.user';
 import { AuthGuard } from 'src/auth/customGuard/guard.custom';
 import { HireDTO } from './dto/hire.talent.dto';
 import { User } from 'src/user/schema/user.schema';
+import { AdminOrUserGuard } from 'src/auth/customGuard/admin-user-guard';
 
 @Controller('hire')
 export class HireController {
@@ -27,6 +28,7 @@ export class HireController {
   // }
 
   @Get('assigned-by-contract')
+  @UseGuards(AdminOrUserGuard)
   getAssignedTalentByContract(@Query('contractId') contractId: string) {
     return this.hireService.getAssignedTalentByContractId(contractId);
   }

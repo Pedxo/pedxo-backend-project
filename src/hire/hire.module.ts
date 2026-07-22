@@ -23,6 +23,9 @@ import {
   ContractTermination,
   ContractTerminationSchema,
 } from 'src/contracts/schemas/contract-termination.schema';
+import { AuthGuard } from 'src/auth/customGuard/guard.custom';
+import { AdminAuthGuard } from 'src/auth/customGuard/admin-auth.guard';
+import { AdminOrUserGuard } from 'src/auth/customGuard/admin-user-guard';
 
 @Module({
   imports: [
@@ -39,6 +42,9 @@ import {
   providers: [
     HireService,
     EmailService,
+    AuthGuard,
+    AdminOrUserGuard,
+    AdminAuthGuard,
     UserService,
     OtpService,
     CloudinaryService,
