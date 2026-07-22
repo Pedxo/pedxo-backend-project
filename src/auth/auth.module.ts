@@ -39,6 +39,8 @@ import {
   ContractTermination,
   ContractTerminationSchema,
 } from 'src/contracts/schemas/contract-termination.schema';
+import { AdminOrUserGuard } from './customGuard/admin-user-guard';
+import { AdminAuthGuard } from './customGuard/admin-auth.guard';
 
 //module decorator
 @Module({
@@ -68,6 +70,8 @@ import {
   providers: [
     AuthService,
     AuthGuard,
+    AdminOrUserGuard,
+    AdminAuthGuard,
     TalentService,
     EmailService,
     TokenService,
