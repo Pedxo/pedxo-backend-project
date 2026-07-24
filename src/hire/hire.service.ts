@@ -35,17 +35,16 @@ export class HireService {
 
         const socialProfiles = Object.fromEntries(
           Object.entries({
-            linkedin: talent.socialProfiles.linkedinAccount,
-            gitlab: talent.socialProfiles.gitlabAccount,
-            twitter: talent.socialProfiles.twitterAccount,
-            facebook: talent.socialProfiles.facebookAccount,
-            instagram: talent.socialProfiles.instagramAccount,
-            tiktok: talent.socialProfiles.tiktokAccount,
-            youtube: talent.socialProfiles.youtubeAccount,
-            behance: talent.socialProfiles.behanceAccount,
-            dribbble: talent.socialProfiles.dribbbleAccount,
-            other: talent.socialProfiles.other,
-            portfolio: talent.portfolioLink,
+            linkedin: talent.socialProfiles.linkedinAccount || '',
+            gitlab: talent.socialProfiles.gitlabAccount || '',
+            twitter: talent.socialProfiles.twitterAccount || '',
+            facebook: talent.socialProfiles.facebookAccount || '',
+            instagram: talent.socialProfiles.instagramAccount || '',
+            tiktok: talent.socialProfiles.tiktokAccount || '',
+            youtube: talent.socialProfiles.youtubeAccount || '',
+            behance: talent.socialProfiles.behanceAccount || '',
+            dribbble: talent.socialProfiles.dribbbleAccount || '',
+            other: talent.socialProfiles.other || '',
           }).filter(([, value]) => value),
         );
 
