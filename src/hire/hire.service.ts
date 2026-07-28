@@ -53,6 +53,7 @@ export class HireService {
           email: talent.email,
           country: talent.country,
           githubAccount: talent.githubAccount,
+          phoneNumber: talent.whatsappNumber,
           socialProfiles,
           portfolio: talent.portfolioLink,
           paymentRate: contract?.paymentRate,
