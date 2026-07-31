@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import {
   CreateTalentDetailsDto,
   CreateTalentDto,
+  UpdateDetailsDto,
   UpdateDto,
 } from './dto/talent.dto';
 import { User } from 'src/user/schema/user.schema';
@@ -188,7 +189,7 @@ export class TalentService {
     }
   }
 
-  async updateTalentDetails(id: string, data: CreateTalentDetailsDto) {
+  async updateTalentDetails(id: string, data: UpdateDetailsDto) {
     try {
       const result = await this.talentDetailsRepository.updateById(id, data);
       return {

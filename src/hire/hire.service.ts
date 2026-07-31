@@ -35,17 +35,16 @@ export class HireService {
 
         const socialProfiles = Object.fromEntries(
           Object.entries({
-            linkedin: talent.socialProfiles.linkedinAccount,
-            gitlab: talent.socialProfiles.gitlabAccount,
-            twitter: talent.socialProfiles.twitterAccount,
-            facebook: talent.socialProfiles.facebookAccount,
-            instagram: talent.socialProfiles.instagramAccount,
-            tiktok: talent.socialProfiles.tiktokAccount,
-            youtube: talent.socialProfiles.youtubeAccount,
-            behance: talent.socialProfiles.behanceAccount,
-            dribbble: talent.socialProfiles.dribbbleAccount,
-            other: talent.socialProfiles.other,
-            portfolio: talent.portfolioLink,
+            linkedin: talent.socialProfiles.linkedinAccount || '',
+            gitlab: talent.socialProfiles.gitlabAccount || '',
+            twitter: talent.socialProfiles.twitterAccount || '',
+            facebook: talent.socialProfiles.facebookAccount || '',
+            instagram: talent.socialProfiles.instagramAccount || '',
+            tiktok: talent.socialProfiles.tiktokAccount || '',
+            youtube: talent.socialProfiles.youtubeAccount || '',
+            behance: talent.socialProfiles.behanceAccount || '',
+            dribbble: talent.socialProfiles.dribbbleAccount || '',
+            other: talent.socialProfiles.other || '',
           }).filter(([, value]) => value),
         );
 
@@ -54,6 +53,7 @@ export class HireService {
           email: talent.email,
           country: talent.country,
           githubAccount: talent.githubAccount,
+          phoneNumber: talent.whatsappNumber,
           socialProfiles,
           portfolio: talent.portfolioLink,
           paymentRate: contract?.paymentRate,
@@ -244,45 +244,30 @@ export class HireService {
     try {
       const contracts = await this.contractModel.find({ userId });
 
-      // console.log('hires', hires);
-      if (!contracts) {
+      if (!contracts.length) {
         return {
           error: true,
-          message: 'Contract with this ID does not exist',
+          message: 'No contracts found for this user',
           data: null,
         };
       }
 
-      const result = [];
+      const result = await Promise.all(
+        contracts.map(async (contract) => {
+          const formatted = await this._formatAssignedTalents(
+            contract._id.toString(),
+          );
 
-      for (const contract of contracts) {
-        // const contract = await this.contractService.getContractById(
-        //   hire.contractId,
-        // );
-
-        const enrichedTalents = await Promise.all(
-          (contract.talentAssignedId || []).map(async (talentId) => {
-            const talent = await this.talentRepo.findByTalentId(talentId);
-            if (!talent) return null;
-
-            return {
-              fullName: `${talent.firstName} ${talent.lastName}`,
-              email: talent.email,
-              country: talent.country,
-              githubAccount: talent.githubAccount,
-              paymentRate: contract?.paymentRate,
-              paymentFrequency: contract?.paymentFrequency,
-              seniorityLevel: contract?.seniorityLevel,
-              roleTitle: contract?.roleTitle,
-            };
-          }),
-        );
-
-        result.push({
-          contractId: contract._id,
-          assignedTalents: enrichedTalents.filter(Boolean),
-        });
-      }
+          return {
+            contractId: contract._id,
+            companyName: contract.companyName,
+            contractType: contract.contractType,
+            roleTitle: contract.roleTitle,
+            status: contract.status,
+            assignedTalents: formatted.data,
+          };
+        }),
+      );
 
       return {
         error: false,
