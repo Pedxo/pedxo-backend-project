@@ -48,7 +48,7 @@ export class HireService {
           }).filter(([, value]) => value),
         );
 
-        const isRider = contract.roleTitle?.trim().toLowerCase() === 'rider';
+        const isRider = talent.roleTitle?.trim().toLowerCase() === 'rider';
 
         return {
           fullName: `${talent.firstName} ${talent.lastName}`,
