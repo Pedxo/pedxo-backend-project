@@ -61,6 +61,7 @@ export class HireService {
           paymentFrequency: contract.paymentFrequency,
           seniorityLevel: contract.seniorityLevel,
           roleTitle: contract.roleTitle,
+          isRider: isRider,
 
           ...(isRider && {
             homeAddress: talent.homeAddress,
