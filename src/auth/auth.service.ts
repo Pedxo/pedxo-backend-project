@@ -26,6 +26,7 @@ import { LoginAdminDto } from 'src/admin/dto/admin.dto';
 import { AdminService } from 'src/admin/admin.service';
 import { googleAuth } from './interface/utility-interface';
 import { AuthProvider } from 'src/user/enum/auth-provider.enum';
+import { EmailService } from 'src/common/email.service';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,7 @@ export class AuthService {
     private jwt: JwtService,
     private otpService: OtpService,
     private adminService: AdminService,
+    private emailservice: EmailService,
   ) {}
 
   //sign up account endpoint
@@ -47,7 +49,19 @@ export class AuthService {
       }
     }
 
-    return await this.userService.registerUser(body);
+    const user = await this.userService.registerUser(body);
+
+    // Notify Pedxo admins about the new signup
+    try {
+      await this.emailservice.sendNewUserSignupNotification(user);
+    } catch (error) {
+      console.error(
+        `Failed to send new user signup notification for ${email}:`,
+        error,
+      );
+    }
+
+    return user;
   }
 
   //Log in endpoint
