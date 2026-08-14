@@ -17,6 +17,8 @@ import {
   ContractTermination,
   ContractTerminationSchema,
 } from './schemas/contract-termination.schema';
+import { AuthGuard } from 'src/auth/customGuard/guard.custom';
+import { AdminAuthGuard } from 'src/auth/customGuard/admin-auth.guard';
 @Module({
   imports: [
     AuthModule,
@@ -29,6 +31,12 @@ import {
     S3serviceModule,
   ],
   controllers: [ContractController],
-  providers: [ContractService, EmailService, TalentDetailsRepository],
+  providers: [
+    ContractService,
+    EmailService,
+    TalentDetailsRepository,
+    AuthGuard,
+    AdminAuthGuard,
+  ],
 })
 export class ContractModule {}

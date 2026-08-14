@@ -28,6 +28,7 @@ import {
   DeleteContractDto,
   UpdateContractDto,
 } from './dto/update-contract.dto';
+import { AdminOrUserGuard } from 'src/auth/customGuard/admin-user-guard';
 // import { Request, Response } from 'express';
 // const fileFilter = (req, file, callback) => {
 //   const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml'];
@@ -221,14 +222,16 @@ export class ContractController {
     );
   }
 
-  @UseGuards(JWTAuthGuard)
+  @UseGuards(AdminOrUserGuard)
   @Patch(':id')
   updateSingleContract(
     @Param('id') contractId: string,
     @Body() dto: UpdateContractDto,
+    @Req() req,
   ) {
     return this.handleRequest(
-      () => this.contractService.updateSingleContract(contractId, dto),
+      () =>
+        this.contractService.updateSingleContract(contractId, dto, req.user),
       'contracts/:id',
     );
   }

@@ -185,6 +185,7 @@ export class AuthService {
       firstName: payload.firstName,
       lastName: payload.lastName,
       email: payload.email,
+      role: 'user',
     };
 
     const [accessToken, refreshToken] = await Promise.all([
