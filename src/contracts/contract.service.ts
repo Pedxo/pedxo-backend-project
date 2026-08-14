@@ -221,7 +221,11 @@ export class ContractService {
     });
   }
 
-  async updateSingleContract(contractId: string, dto: UpdateContractDto) {
+  async updateSingleContract(
+    contractId: string,
+    dto: UpdateContractDto,
+    user: any,
+  ) {
     return this.handleDatabaseOperation(async () => {
       const contract = await this.contractModel.findById(contractId);
 
@@ -229,6 +233,16 @@ export class ContractService {
         return {
           error: true,
           message: 'Invalid Contract ID',
+          data: null,
+        };
+      }
+
+      const isAdmin = user?.role === 'admin';
+
+      if (!isAdmin && contract.userId.toString() !== user?._id.toString()) {
+        return {
+          error: true,
+          message: 'You are not authorized to update this contract',
           data: null,
         };
       }
