@@ -49,11 +49,11 @@ export class AuthService {
       }
     }
 
-    const user = await this.userService.registerUser(body);
+    const result = await this.userService.registerUser(body);
 
     // Notify Pedxo admins about the new signup
     try {
-      await this.emailservice.sendNewUserSignupNotification(user);
+      await this.emailservice.sendNewUserSignupNotification(result.newUser);
     } catch (error) {
       console.error(
         `Failed to send new user signup notification for ${email}:`,
