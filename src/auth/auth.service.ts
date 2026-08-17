@@ -61,7 +61,7 @@ export class AuthService {
       );
     }
 
-    return user;
+    return result;
   }
 
   //Log in endpoint
