@@ -436,24 +436,41 @@ export class EmailService {
     );
   }
 
-  async sendNewUserSignupNotification(user: {
-    _id?: any;
-    firstName?: string;
-    lastName?: string;
-    email: string;
-    userName?: string;
-    provider?: string;
-    isEmailVerified?: boolean;
-    createdAt?: Date;
-  }) {
+  async sendNewUserSignupNotification(
+    user: {
+      _id?: any;
+      firstName?: string;
+      lastName?: string;
+      email: string;
+      userName?: string;
+      provider?: string;
+      isEmailVerified?: boolean;
+      createdAt?: Date;
+    },
+    requestInfo?: {
+      ip?: string;
+      forwardedFor?: string | string[];
+      userAgent?: string;
+      origin?: string;
+      referer?: string;
+      timestamp?: string | Date;
+    },
+  ) {
     const fullName =
       `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'N/A';
+
+    const forwardedFor = Array.isArray(requestInfo?.forwardedFor)
+      ? requestInfo.forwardedFor.join(', ')
+      : requestInfo?.forwardedFor || 'N/A';
 
     const emailBody = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
       <h2 style="color: #0a66c2;">New User Signed Up 🎉</h2>
 
-      <p>A new user has successfully created an account on <strong>Pedxo</strong>.</p>
+      <p>
+        A new user has successfully created an account on
+        <strong>Pedxo</strong>.
+      </p>
 
       <hr />
 
@@ -465,14 +482,57 @@ export class EmailService {
       <p><strong>Last Name:</strong> ${user.lastName || 'N/A'}</p>
       <p><strong>Email:</strong> ${user.email}</p>
       <p><strong>Username:</strong> ${user.userName || 'N/A'}</p>
-      <p><strong>Authentication Provider:</strong> ${user.provider || 'Local'}</p>
+      <p>
+        <strong>Authentication Provider:</strong>
+        ${user.provider || 'Local'}
+      </p>
+
       <p>
         <strong>Email Verified:</strong>
         ${user.isEmailVerified ? 'Yes' : 'No'}
       </p>
+
       <p>
         <strong>Registration Date:</strong>
         ${user.createdAt ? new Date(user.createdAt).toLocaleString() : 'N/A'}
+      </p>
+
+      <hr />
+
+      <h3>Request Information</h3>
+
+      <p>
+        <strong>IP Address:</strong>
+        ${requestInfo?.ip || 'N/A'}
+      </p>
+
+      <p>
+        <strong>Forwarded IP:</strong>
+        ${forwardedFor}
+      </p>
+
+      <p>
+        <strong>User Agent:</strong>
+        ${requestInfo?.userAgent || 'N/A'}
+      </p>
+
+      <p>
+        <strong>Origin:</strong>
+        ${requestInfo?.origin || 'N/A'}
+      </p>
+
+      <p>
+        <strong>Referer:</strong>
+        ${requestInfo?.referer || 'N/A'}
+      </p>
+
+      <p>
+        <strong>Request Time:</strong>
+        ${
+          requestInfo?.timestamp
+            ? new Date(requestInfo.timestamp).toLocaleString()
+            : 'N/A'
+        }
       </p>
 
       <hr />

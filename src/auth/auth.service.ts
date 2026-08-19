@@ -39,7 +39,17 @@ export class AuthService {
   ) {}
 
   //sign up account endpoint
-  async create(body: CreateUserDTO) {
+  async create(
+    body: CreateUserDTO,
+    requestInfo?: {
+      ip?: string;
+      forwardedFor?: string | string[];
+      userAgent?: string;
+      origin?: string;
+      referer?: string;
+      timestamp?: string | Date;
+    },
+  ) {
     const { email } = body;
     const userExist = await this.userService.checkIfUserExists(email);
 
@@ -53,7 +63,10 @@ export class AuthService {
 
     // Notify Pedxo admins about the new signup
     try {
-      await this.emailservice.sendNewUserSignupNotification(result.newUser);
+      await this.emailservice.sendNewUserSignupNotification(
+        result.newUser,
+        requestInfo,
+      );
     } catch (error) {
       console.error(
         `Failed to send new user signup notification for ${email}:`,
