@@ -9,21 +9,33 @@ export class AdminOrUserGuard implements CanActivate {
     private readonly adminGuard: AdminAuthGuard,
   ) {}
 
-  async canActivate(context: ExecutionContext) {
-    return (
-      (await this.tryGuard(this.authGuard, context)) ||
-      (await this.tryGuard(this.adminGuard, context))
-    );
-  }
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
 
-  private async tryGuard(
-    guard: CanActivate,
-    context: ExecutionContext,
-  ): Promise<boolean> {
+    // Try normal user authentication first
     try {
-      return !!(await guard.canActivate(context));
+      const authenticated = await this.authGuard.canActivate(context);
+
+      if (authenticated) {
+        request.userType = 'user';
+        return true;
+      }
     } catch {
-      return false;
+      // Continue and try admin authentication
     }
+
+    // Try admin authentication
+    try {
+      const authenticated = await this.adminGuard.canActivate(context);
+
+      if (authenticated) {
+        request.userType = 'admin';
+        return true;
+      }
+    } catch {
+      // Both authentication methods failed
+    }
+
+    return false;
   }
 }

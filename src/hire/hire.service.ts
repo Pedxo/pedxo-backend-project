@@ -61,6 +61,7 @@ export class HireService {
           paymentFrequency: contract.paymentFrequency,
           seniorityLevel: contract.seniorityLevel,
           roleTitle: contract.roleTitle,
+          isRider: isRider,
 
           ...(isRider && {
             homeAddress: talent.homeAddress,
@@ -172,7 +173,7 @@ export class HireService {
       if (updatedContract.talentAssignedId?.length > 0) {
         const freq = updatedContract.paymentFrequency;
 
-        const nextPaymentDate = this.calculateNextPaymentDate(
+        const nextPaymentDate = await this.calculateNextPaymentDate(
           updatedContract.startDate,
           freq?.trim().toLowerCase(),
         );
