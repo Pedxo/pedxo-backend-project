@@ -25,7 +25,7 @@ import { AuthGuard } from './customGuard/guard.custom';
 import { CurrentUser } from 'src/common/decorator/current.logged.user';
 import { User } from 'src/user/schema/user.schema';
 import { AuthGuard as Guard } from '@nestjs/passport';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { GoogleAuthGuard } from './customGuard/google.guard';
 
 @Controller('auth')
@@ -33,8 +33,25 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post()
-  async create(@Body() body: CreateUserDTO) {
-    return await this.authService.create(body);
+  async create(@Body() body: CreateUserDTO, @Req() req: Request) {
+    const requestInfo = {
+      ip: req.ip,
+      forwardedFor: req.headers['x-forwarded-for'],
+      userAgent: req.headers['user-agent'],
+      origin: req.headers.origin,
+      referer: req.headers.referer,
+      timestamp: new Date(),
+    };
+    console.log('===== SIGNUP ATTEMPT =====');
+    console.log({
+      firstName: body.firstName,
+      lastName: body.lastName,
+      email: body.email,
+      ...requestInfo,
+    });
+    console.log('==========================');
+
+    return await this.authService.create(body, requestInfo);
   }
 
   // @Serialize(UserDto)
