@@ -26,4 +26,12 @@ export class CreateUserDTO {
   @IsOptional()
   @IsString()
   profilePicPublicId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  captchaId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  captchaInput: string;
 }

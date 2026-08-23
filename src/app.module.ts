@@ -17,6 +17,7 @@ import * as dotenv from 'dotenv';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CaptchaModule } from './captcha/captcha.module';
 dotenv.config();
 @Module({
   imports: [
@@ -40,6 +41,7 @@ dotenv.config();
     HireModule,
     AdminModule,
     OtpModule,
+    CaptchaModule,
     OutSourceModule,
     BookDemoModule,
     ContractModule,
