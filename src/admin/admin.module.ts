@@ -13,6 +13,8 @@ import { OTP, OtpSchema } from 'src/otp/schema/otp.schema';
 import { EmailService } from 'src/common/email.service';
 import { TokenService } from 'src/talent/token.service';
 import { FormToken, FormTokenSchema } from 'src/talent/schemas/token.schema';
+import { CaptchaService } from 'src/captcha/captcha.service';
+import { Captcha, CaptchaSchema } from 'src/captcha/captcha.schema';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { FormToken, FormTokenSchema } from 'src/talent/schemas/token.schema';
       { name: Admin.name, schema: AdminSchema },
       { name: OTP.name, schema: OtpSchema },
       { name: FormToken.name, schema: FormTokenSchema },
+      { name: Captcha.name, schema: CaptchaSchema },
     ]),
     UserModule,
     TalentModule,
@@ -32,6 +35,7 @@ import { FormToken, FormTokenSchema } from 'src/talent/schemas/token.schema';
     TokenService,
     EmailService,
     OtpService,
+    CaptchaService,
   ],
 })
 export class AdminModule {}

@@ -47,6 +47,11 @@ export class User extends Document {
 
   @Prop({ default: null })
   profilePicPublicId?: string;
+
+  @Prop({ type: Date })
+  emailVerificationExpiresAt?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.index({ emailVerificationExpiresAt: 1 }, { expireAfterSeconds: 0 });

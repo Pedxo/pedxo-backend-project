@@ -31,8 +31,12 @@ export class UserService {
 
     const hashedPassword = await HashData(password);
 
+    const emailVerificationExpiresAt = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    );
     const newUser = await this.userModel.create({
       ...payload,
+      emailVerificationExpiresAt,
       password: hashedPassword,
     });
 
