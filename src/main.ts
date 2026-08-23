@@ -3,10 +3,12 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ENVIRONMENT } from './common/constant/enivronment/enviroment';
 import * as cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const PORT = ENVIRONMENT.CONNECTION.PORT;
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.set('trust proxy', true);
   app.use(cookieParser());
   app.enableCors({
     origin: '*', // Allow all origins
@@ -16,6 +18,6 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   await app.listen(PORT);
-  console.log(`Application is running on: http://localhost:${PORT}`)
+  console.log(`Application is running on: http://localhost:${PORT}`);
 }
 bootstrap();
