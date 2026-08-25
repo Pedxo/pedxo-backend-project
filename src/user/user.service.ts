@@ -203,6 +203,8 @@ export class UserService {
   async registerGoogleUser(dto: Partial<User>) {
     const googleUser = await this.userModel.create({
       ...dto,
+      isEmailVerified: true,
+      emailVerificationExpiresAt: undefined,
     });
     const token = await this.generateAuthTokens(googleUser);
     const randomToken = await generateRandomTokenForLoggedIn();
@@ -217,6 +219,8 @@ export class UserService {
   async registerGithubUser(dto: Partial<User>) {
     const githubUser = await this.userModel.create({
       ...dto,
+      isEmailVerified: true,
+      emailVerificationExpiresAt: undefined,
     });
     const token = await this.generateAuthTokens(githubUser);
     const randomToken = await generateRandomTokenForLoggedIn();
