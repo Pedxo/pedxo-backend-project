@@ -131,7 +131,19 @@ export class AuthController {
         return res.redirect(`https://pedxo.com/login`);
       }
 
-      const { accessToken } = await this.authService.googleAuth(req.user);
+      const requestInfo = {
+        ip: req.ip,
+        forwardedFor: req.headers['x-forwarded-for'],
+        userAgent: req.headers['user-agent'],
+        origin: req.headers.origin,
+        referer: req.headers.referer,
+        timestamp: new Date(),
+      };
+
+      const { accessToken } = await this.authService.googleAuth(
+        req.user,
+        requestInfo,
+      );
 
       return res.redirect(
         `https://pedxo.com/auth/success?token=${accessToken}`,
@@ -149,7 +161,19 @@ export class AuthController {
   @Get('github/redirect')
   @UseGuards(Guard('github'))
   async githubAuthRedirect(@Req() req, @Res() res) {
-    const { accessToken } = await this.authService.githubAuth(req.user);
+    const requestInfo = {
+      ip: req.ip,
+      forwardedFor: req.headers['x-forwarded-for'],
+      userAgent: req.headers['user-agent'],
+      origin: req.headers.origin,
+      referer: req.headers.referer,
+      timestamp: new Date(),
+    };
+
+    const { accessToken } = await this.authService.githubAuth(
+      req.user,
+      requestInfo,
+    );
     return res.redirect(`https://pedxo.com/auth/success?token=${accessToken}`);
   }
 }
