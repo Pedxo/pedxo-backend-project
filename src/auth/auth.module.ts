@@ -41,6 +41,8 @@ import {
 } from 'src/contracts/schemas/contract-termination.schema';
 import { AdminOrUserGuard } from './customGuard/admin-user-guard';
 import { AdminAuthGuard } from './customGuard/admin-auth.guard';
+import { CaptchaService } from 'src/captcha/captcha.service';
+import { Captcha, CaptchaSchema } from 'src/captcha/captcha.schema';
 
 //module decorator
 @Module({
@@ -53,6 +55,7 @@ import { AdminAuthGuard } from './customGuard/admin-auth.guard';
       { name: ContractTermination.name, schema: ContractTerminationSchema },
       { name: Admin.name, schema: AdminSchema },
       { name: FormToken.name, schema: FormTokenSchema },
+      { name: Captcha.name, schema: CaptchaSchema },
     ]),
     {
       ...JwtModule.register({
@@ -74,6 +77,7 @@ import { AdminAuthGuard } from './customGuard/admin-auth.guard';
     AdminAuthGuard,
     TalentService,
     EmailService,
+    CaptchaService,
     TokenService,
     HireService,
     ContractService,

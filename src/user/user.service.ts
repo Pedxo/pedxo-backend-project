@@ -31,8 +31,12 @@ export class UserService {
 
     const hashedPassword = await HashData(password);
 
+    const emailVerificationExpiresAt = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    );
     const newUser = await this.userModel.create({
       ...payload,
+      emailVerificationExpiresAt,
       password: hashedPassword,
     });
 
@@ -199,6 +203,8 @@ export class UserService {
   async registerGoogleUser(dto: Partial<User>) {
     const googleUser = await this.userModel.create({
       ...dto,
+      isEmailVerified: true,
+      emailVerificationExpiresAt: undefined,
     });
     const token = await this.generateAuthTokens(googleUser);
     const randomToken = await generateRandomTokenForLoggedIn();
@@ -213,6 +219,8 @@ export class UserService {
   async registerGithubUser(dto: Partial<User>) {
     const githubUser = await this.userModel.create({
       ...dto,
+      isEmailVerified: true,
+      emailVerificationExpiresAt: undefined,
     });
     const token = await this.generateAuthTokens(githubUser);
     const randomToken = await generateRandomTokenForLoggedIn();

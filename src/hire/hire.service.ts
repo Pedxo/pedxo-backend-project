@@ -48,6 +48,7 @@ export class HireService {
           }).filter(([, value]) => value),
         );
 
+        const hasSocialProfiles = Object.keys(socialProfiles).length > 0;
         const isRider = talent.roleTitle?.trim().toLowerCase() === 'rider';
 
         return {
@@ -55,7 +56,7 @@ export class HireService {
           email: talent.email,
           githubAccount: talent.githubAccount,
           phoneNumber: talent.whatsappNumber,
-          socialProfiles,
+          ...(hasSocialProfiles && { socialProfiles }),
           portfolio: talent.portfolioLink,
           paymentRate: contract.paymentRate,
           paymentFrequency: contract.paymentFrequency,

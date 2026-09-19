@@ -27,12 +27,14 @@ import { AdminService } from 'src/admin/admin.service';
 import { googleAuth } from './interface/utility-interface';
 import { AuthProvider } from 'src/user/enum/auth-provider.enum';
 import { EmailService } from 'src/common/email.service';
+import { CaptchaService } from 'src/captcha/captcha.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
     private jwt: JwtService,
+    private captchaService: CaptchaService,
     private otpService: OtpService,
     private adminService: AdminService,
     private emailservice: EmailService,
@@ -57,6 +59,15 @@ export class AuthService {
       if (userExist.email === email) {
         throw new UnprocessableEntityException('Email already exists');
       }
+    }
+
+    const isValidCaptcha = await this.captchaService.verify(
+      body.captchaId,
+      body.captchaInput,
+    );
+
+    if (!isValidCaptcha) {
+      throw new BadRequestException('Invalid or expired CAPTCHA');
     }
 
     const result = await this.userService.registerUser(body);
@@ -132,6 +143,7 @@ export class AuthService {
     // console.log('sucesss');
 
     user.isEmailVerified = true;
+    user.emailVerificationExpiresAt = undefined;
 
     await user.save();
     // console.log('new user', user);
