@@ -151,6 +151,12 @@ export class AuthService {
     const tokens = await this.token(user);
     // console.log('token', tokens);
 
+    await this.emailservice.sendOnboardingEmail({
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
+
     return {
       message:
         'Email verified successfully. You are now being redirected to your dashboard.',
@@ -330,6 +336,12 @@ export class AuthService {
         await this.userService.registerGoogleUser(payload);
       user = createdUser;
 
+      await this.emailservice.sendOnboardingEmail({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      });
+
       // Notify admins about new Google signup
       try {
         await this.emailservice.sendNewUserSignupNotification(
@@ -390,6 +402,12 @@ export class AuthService {
       const { githubUser: createdUser } =
         await this.userService.registerGithubUser(payload);
       user = createdUser;
+
+      await this.emailservice.sendOnboardingEmail({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      });
 
       // Notify admins about new Google signup
       try {
