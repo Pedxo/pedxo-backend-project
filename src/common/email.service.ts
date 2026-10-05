@@ -1,132 +1,3 @@
-// import { Injectable } from '@nestjs/common';
-// import * as nodemailer from 'nodemailer';
-// import SMTPTransport from 'nodemailer/lib/smtp-transport';
-// import { ContractEmailDto } from '../contracts/dto/contract.email.dto';
-// import Mail from 'nodemailer/lib/mailer';
-
-// @Injectable()
-// export class EmailService {
-//   private transporter = nodemailer.createTransport({
-//     host: 'smtp.gmail.com',
-//     port: 465,
-//     secure: true,
-//     auth: {
-//       user: process.env.GMAIL_USER,
-//       pass: process.env.GMAIL_PASSWORD,
-//     },
-//     tls: {
-//       rejectUnauthorized: false,
-//     },
-//   } as SMTPTransport.Options);
-
-//   constructor() {
-//     this.verifyConnection();
-//   }
-
-//   private async verifyConnection() {
-//     try {
-//       await this.transporter.verify();
-//       console.log('✅ SMTP server is ready to take messages');
-//     } catch (err) {
-//       console.error('❌ SMTP verify failed:', err);
-//     }
-//   }
-
-//   async sendMail(to: string, subject: string, content: string): Promise<void> {
-//     try {
-//       await this.transporter.sendMail({
-//         from: `"Pedxo" <${process.env.GMAIL_USER}>`,
-//         to,
-//         subject,
-//         html: content,
-//       });
-//       console.log(`Email sent to ${to}`);
-//     } catch (error) {
-//       console.error(`Failed to send email to ${to}:`, error);
-//       throw new Error('Failed to send email');
-//     }
-//   }
-
-//   async sendContractEmail(contractDto: ContractEmailDto): Promise<void> {
-//     const emailBody = `
-//     <h1>New Onboarding Request</h1>
-
-//     <h2>Personal Details</h2>
-//     <p><strong>Client Name:</strong> ${contractDto.clientName}</p>
-//     <p><strong>Email:</strong> ${contractDto.email}</p>
-//     <p><strong>Country:</strong> ${contractDto.country}</p>
-//     <p><strong>State:</strong> ${contractDto.region}</p>
-//     <p><strong>Company Name:</strong> ${contractDto.companyName}</p>
-
-//     <h2>${contractDto.contractType} Contract</h2>
-//     <p><strong>Role Title:</strong> ${contractDto.roleTitle || 'N/A'}</p>
-//     <p><strong>Seniority Level:</strong> ${contractDto.seniorityLevel || 'N/A'}</p>
-//     <p><strong>Scope Of Explanation And Tech Stack Requirements:</strong> ${contractDto.scopeOfWork} <br></p>
-
-//     <h2>Project Timeline</h2>
-//     <p><strong>Start Date:</strong> ${contractDto.startDate}</p>
-//     <p><strong>End Date:</strong> ${contractDto.endDate || 'N/A'}</p>
-//     <p><strong>Explanation of Scope of Work:</strong> ${contractDto.explanationOfScopeOfWork}</p>
-
-//     <h2>Compensation and Budget</h2>
-//     <p><strong>Payment Rate:</strong> ${contractDto.paymentRate}</p>
-//     <p><strong>Payment Frequency:</strong> ${contractDto.paymentFrequency}</p>
-
-//     <p>Thank you.</p>
-//   `;
-//     await this.sendMail(
-//       process.env.OWNER_EMAIL,
-//       'New Onboarding Request',
-//       emailBody,
-//     );
-//     await this.sendMail(
-//       process.env.GMAIL_USER,
-//       'New Onboarding Request',
-//       emailBody,
-//     );
-//   }
-
-//   async sendPlainTextEmail(
-//     to: string,
-//     subject: string,
-//     text: string,
-//   ): Promise<void> {
-//     try {
-//       await this.transporter.sendMail({
-//         from: `"Pedxo" <${process.env.GMAIL_USER}>`,
-//         to,
-//         subject,
-//         text,
-//       });
-//       console.log(`Plain text email sent to ${to}`);
-//     } catch (error) {
-//       console.error(`Failed to send plain text email to ${to}:`, error);
-//       throw new Error('Failed to send plain text email');
-//     }
-//   }
-
-//   async sendEmailWithAttachment(
-//     to: string,
-//     subject: string,
-//     content: string,
-//     attachments: Mail.Attachment[],
-//   ): Promise<void> {
-//     try {
-//       await this.transporter.sendMail({
-//         from: `"Pedxo" <${process.env.GMAIL_USER}>`,
-//         to,
-//         subject,
-//         html: content,
-//         attachments,
-//       });
-//       console.log(`Email with attachment sent to ${to}`);
-//     } catch (error) {
-//       console.error(`Failed to send email with attachment to ${to}:`, error);
-//       throw new Error('Failed to send email with attachment');
-//     }
-//   }
-// }
-
 import { Injectable } from '@nestjs/common';
 import { Resend } from 'resend';
 import { ContractEmailDto } from '../contracts/dto/contract.email.dto';
@@ -150,10 +21,24 @@ export class EmailService {
     }
   }
 
-  async sendMail(to: string, subject: string, content: string): Promise<void> {
+  private escapeHtml(value = ''): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  async sendMail(
+    to: string,
+    subject: string,
+    content: string,
+    from: string = process.env.OWNER_EMAIL,
+  ): Promise<void> {
     try {
       await this.resend.emails.send({
-        from: `"Pedxo" <${process.env.OWNER_EMAIL}>`,
+        from: `Pedxo <${from}>`,
         to,
         subject,
         html: content,
@@ -390,6 +275,270 @@ export class EmailService {
       payload.to,
       'Talent assigned to your contract',
       emailBody,
+    );
+  }
+
+  async sendOnboardingEmail(user: {
+    email: string;
+    firstName?: string;
+    lastName?: string;
+  }): Promise<void> {
+    const APP = 'https://pedxo.com';
+    // Host these two files publicly. Emails can't read local assets.
+    // const ASSETS = process.env.EMAIL_ASSETS_URL || `${APP}/email`;
+    const LOGO_URL =
+      'https://res.cloudinary.com/craftshop/image/upload/v1791234914/pedxo_logo_rxxqio.jpg';
+    const HERO_URL =
+      'https://res.cloudinary.com/craftshop/image/upload/v1791230951/onboard_image_drewpd.jpg';
+    const FONT =
+      "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+    const BRAND = '#0a66c2';
+
+    const fullName =
+      `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'there';
+    const name = this.escapeHtml(fullName);
+    const email = this.escapeHtml(user.email);
+
+    const button = (label: string, href: string) => `
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin-top:16px;">
+      <tr>
+        <td style="background:${BRAND};border-radius:8px;">
+          <a href="${href}" target="_blank"
+             style="display:inline-block;padding:14px 28px;font-family:${FONT};font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;">
+            ${label}
+          </a>
+        </td>
+      </tr>
+    </table>`;
+
+    const bullets = (items: string[]) =>
+      `<ul style="margin:8px 0 0;padding-left:20px;">${items
+        .map((i) => `<li style="margin-bottom:6px;">${i}</li>`)
+        .join('')}</ul>`;
+
+    const step = (icon: string, title: string, body: string) => `
+    <tr>
+      <td width="68" valign="top" style="padding-top:28px;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+          <tr>
+            <td align="center" valign="middle" width="44" height="44"
+                style="width:44px;height:44px;background:#eaf2fb;border-radius:22px;font-size:22px;line-height:44px;">
+              ${icon}
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td valign="top" style="padding-top:28px;font-family:${FONT};font-size:16px;line-height:24px;color:#333333;">
+        <strong style="font-size:18px;color:#111111;">${title}</strong><br />
+        ${body}
+      </td>
+    </tr>`;
+
+    const link = (label: string, href: string) =>
+      `<a href="${href}" target="_blank" style="color:${BRAND};text-decoration:none;font-weight:600;">${label}</a>`;
+
+    const emailBody = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Pedxo Talent On Demand!</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;">
+  <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+    <tr>
+      <td align="center" style="padding:0 16px;">
+        <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width:600px;">
+
+          <!-- Logo -->
+          <tr>
+            <td style="padding:32px 0 24px;">
+              <a href="${APP}" target="_blank">
+                <img src="${LOGO_URL}" alt="Pedxo" width="120" style="display:block;border:0;height:auto;width:120px;" />
+              </a>
+            </td>
+          </tr>
+
+          <!-- Hero image -->
+          <tr>
+            <td>
+              <img src="${HERO_URL}" alt="Welcome to Pedxo Talent On Demand" width="600"
+                   style="display:block;border:0;border-radius:8px;width:100%;max-width:600px;height:auto;" />
+            </td>
+          </tr>
+
+          <!-- Heading + intro -->
+          <tr>
+            <td style="padding-top:32px;font-family:${FONT};font-size:30px;line-height:38px;font-weight:700;color:#111111;">
+              Welcome to Pedxo Talent On Demand!
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 0 32px;font-family:${FONT};font-size:18px;line-height:28px;color:#333333;">
+              Hi ${name},<br /><br />
+              You’re all set to start using Pedxo On Demand — the best way to hire the right talent
+              by using prompts, to deliver tasks for you and your company. It’s never been easier
+              to get work done.
+            </td>
+          </tr>
+
+          <!-- Next steps -->
+          <tr>
+            <td style="border-top:1px solid #e6e6e6;padding-top:32px;font-family:${FONT};font-size:20px;font-weight:700;color:#111111;">
+              Next steps to start
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table role="presentation" width="100%" border="0" cellpadding="0" cellspacing="0">
+
+                ${step(
+                  '🤖',
+                  'First Autonomous hiring',
+                  `Click on <strong>Create contract</strong> to explain what type of talent you're looking for —
+                   role, skills, start date, region, experience level, compensation — and let the software
+                   onboard the right talent for you automatically on your dashboard.<br />
+                   ${link('Create a contract →', `${APP}/dashboard/create-contract`)}`,
+                )}
+
+                ${step(
+                  '✍️',
+                  'e-Sign and send the created contract',
+                  `Review your created contract, sign and send it for the tech to start its work. The contract
+                   is used to manage your hired talents specifically on the app. You can always edit it until
+                   you come close to the right prompts.`,
+                )}
+
+                ${step(
+                  '📄',
+                  'Contract management system',
+                  bullets([
+                    'Go to your <strong>Contract</strong> tab to manage the agreement you have created with your hired talent and edit any section electronically. The talent will get a notification for the agreement changes.',
+                    'Click on the <strong>onboarding human icon</strong> on the overview page to see all your pending contracts that the agent has not yet onboarded the right talent for, and choose to continue creating the contract.',
+                    'Access your hired talent on the <strong>Teams</strong> tab.',
+                  ]) +
+                    `<p style="margin:10px 0 0;font-size:14px;line-height:20px;color:#666666;">
+                      * You will be able to see all the information and contact details of the hired talent the
+                      tech has scraped for you, from their portfolio, to their GitHub link, email address and
+                      social media profiles.
+                    </p>`,
+                )}
+
+                ${step(
+                  '🌍',
+                  'Employer of record feature',
+                  bullets([
+                    'Navigate to <strong>Spending</strong> to manage your payments and compensations to the hired talents based on frequency, and deposit money into the app to handle your payouts on FX-converted payments automatically.',
+                    'Navigate to <strong>Expenses</strong> to manage the record of your transactions and payments to hired talents in any country. Compliance is covered automatically.',
+                    'While your agent is working to onboard the right talent for you, please allow some time to connect to the right candidate and do outreach on your behalf.',
+                    'Once it has found the right candidate, it will onboard the talent to your <strong>Teams</strong> tab on your dashboard. From there you can manage the talent and email them for an interview or tasks.',
+                    'You can see all the information about the hired talent on your Teams tab.',
+                  ]) +
+                    button('Handle payouts here', `${APP}/dashboard/payroll`),
+                )}
+
+                ${step(
+                  '👥',
+                  'Working with hired talent',
+                  bullets([
+                    'Once you have been connected with your automated hired talent, you can start giving them tasks and adding them to your AI platform.',
+                    'Add the hired talent to your company’s platforms on GitHub, Figma, Slack and your AI workspace to start delivery.',
+                    'You can decide to interview the hired talent if you want to re-confirm before adding them to work platforms.',
+                    'Find your hired talent on the <strong>Teams</strong> bar of your dashboard and start giving them tasks.',
+                    'Make payment on the same dashboard when payroll is due. Easy.',
+                  ]),
+                )}
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- Hire Talent CTA -->
+          <tr>
+            <td align="center" style="padding:40px 0 8px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:${BRAND};border-radius:8px;">
+                    <a href="${APP}/dashboard/create-contract" target="_blank"
+                       style="display:inline-block;padding:16px 40px;font-family:${FONT};font-size:17px;font-weight:700;color:#ffffff;text-decoration:none;">
+                      Hire Talent
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Support + use case -->
+          <tr>
+            <td style="padding:32px 0 8px;border-top:1px solid #e6e6e6;font-family:${FONT};font-size:16px;line-height:24px;color:#333333;">
+              If you have a question about your talent sourcing and hiring process, you can reach our
+              support team at
+              <a href="mailto:recruit@pedxo.com" style="color:${BRAND};text-decoration:none;font-weight:600;">recruit@pedxo.com</a>.
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 0 32px;font-family:${FONT};font-size:16px;line-height:24px;color:#333333;">
+              <strong>Use-case:</strong> Pedxo recruits the right talent for the right tasks automatically.
+              Companies use it to automate their hiring process and hire the right talent to work in the
+              loop and deliver tasks with their AI models.
+              ${link('See use cases →', `${APP}/#use-cases`)}
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="border-top:1px solid #e6e6e6;padding:32px 0 8px;">
+              <a href="${APP}" target="_blank">
+                <img src="${LOGO_URL}" alt="Pedxo" width="90" style="display:block;border:0;height:auto;width:90px;margin:0 auto;" />
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:16px 0 0;font-family:${FONT};font-size:14px;line-height:20px;">
+              <a href="https://www.facebook.com/pedxo" target="_blank" style="color:#555555;text-decoration:none;padding:0 8px;">Facebook</a>
+              <a href="https://www.instagram.com/pedxo" target="_blank" style="color:#555555;text-decoration:none;padding:0 8px;">Instagram</a>
+              <a href="https://twitter.com/pedxo" target="_blank" style="color:#555555;text-decoration:none;padding:0 8px;">Twitter</a>
+              <a href="https://www.linkedin.com/company/pedxo" target="_blank" style="color:#555555;text-decoration:none;padding:0 8px;">LinkedIn</a>
+              <a href="https://www.youtube.com/@pedxo" target="_blank" style="color:#555555;text-decoration:none;padding:0 8px;">YouTube</a>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:24px 0 0;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="border:1px solid ${BRAND};border-radius:8px;">
+                    <a href="${APP}/dashboard/full-time-form?contractType=full-time" target="_blank"
+                       style="display:inline-block;padding:10px 24px;font-family:${FONT};font-size:14px;font-weight:600;color:${BRAND};text-decoration:none;">
+                      User Help
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:24px 0 40px;font-family:${FONT};font-size:13px;line-height:20px;color:#777777;">
+              This email was sent to
+              <a href="mailto:${email}" style="color:${BRAND};text-decoration:none;">${email}</a>.<br />
+              This email was sent from Pedxo, a company based in Lagos, Nigeria.<br />
+              Copyright © ${new Date().getFullYear()} Pedxo. All rights reserved.
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    await this.sendMail(
+      user.email,
+      'Welcome to Pedxo Talent On Demand!',
+      emailBody,
+      'recruit@pedxo.com',
     );
   }
 
