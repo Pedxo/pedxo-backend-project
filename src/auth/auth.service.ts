@@ -297,7 +297,17 @@ export class AuthService {
     };
   }
 
-  async googleAuth(googleUser: googleAuth) {
+  async googleAuth(
+    googleUser: googleAuth,
+    requestInfo?: {
+      ip?: string;
+      forwardedFor?: string | string[];
+      userAgent?: string;
+      origin?: string;
+      referer?: string;
+      timestamp?: string | Date;
+    },
+  ) {
     const { email, firstName, lastName } = googleUser;
 
     if (!email) {
@@ -319,6 +329,19 @@ export class AuthService {
       const { googleUser: createdUser } =
         await this.userService.registerGoogleUser(payload);
       user = createdUser;
+
+      // Notify admins about new Google signup
+      try {
+        await this.emailservice.sendNewUserSignupNotification(
+          createdUser,
+          requestInfo,
+        );
+      } catch (error) {
+        console.error(
+          `Failed to send Google signup notification for ${email}:`,
+          error,
+        );
+      }
     }
 
     // Always refresh tokens when signing in
@@ -335,7 +358,17 @@ export class AuthService {
     };
   }
 
-  async githubAuth(githubUser: googleAuth) {
+  async githubAuth(
+    githubUser: googleAuth,
+    requestInfo?: {
+      ip?: string;
+      forwardedFor?: string | string[];
+      userAgent?: string;
+      origin?: string;
+      referer?: string;
+      timestamp?: string | Date;
+    },
+  ) {
     const { email, firstName, lastName } = githubUser;
 
     if (!email) {
@@ -357,6 +390,19 @@ export class AuthService {
       const { githubUser: createdUser } =
         await this.userService.registerGithubUser(payload);
       user = createdUser;
+
+      // Notify admins about new Google signup
+      try {
+        await this.emailservice.sendNewUserSignupNotification(
+          createdUser,
+          requestInfo,
+        );
+      } catch (error) {
+        console.error(
+          `Failed to send Google signup notification for ${email}:`,
+          error,
+        );
+      }
     }
 
     // Always refresh tokens when signing in
